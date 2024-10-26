@@ -156,7 +156,8 @@ jobs:
       run: |
         ls -l   
         7z x vulkanSDK_1.3.296.0.7z
-        ls -l vulkanSDK
+        ls -l
+        
         
 
 
