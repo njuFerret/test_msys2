@@ -53,6 +53,9 @@ jobs:
           @REM 7z x libclang.7z -o%CLANG_INSTALL_DIR%\..\
           7z x libclang.7z -oD:\Dev
           set PATH=%CLANG_INSTALL_DIR%\bin;%CD%\ninja;%CD%\MinGW\bin;%PATH%
+          llvm-config --version
+          dir D:\Dev\libclang
+
           cmake -DCMAKE_INSTALL_PREFIX=%CLAZY_INSTALL_DIR% -DCLANG_LIBRARY_IMPORT="%CLANG_INSTALL_DIR%/lib/libclang.a" -DCMAKE_BUILD_TYPE=Release -G "Ninja" -B./clazy/build -S./clazy
 
           cmake --build clazy/build --parallel
