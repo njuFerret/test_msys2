@@ -52,7 +52,7 @@ jobs:
           mkdir %CLANG_INSTALL_DIR%
           @REM 7z x libclang.7z -o%CLANG_INSTALL_DIR%\..\
           7z x libclang.7z -oD:\Dev
-          set PATH=%CLANG_INSTALL_DIR%\bin;%CD%\ninja;%CD%\MinGW\bin;%PATH%
+          set PATH=%CD%\ninja;%CD%\MinGW\bin;%CLANG_INSTALL_DIR%\bin;%PATH%
           llvm-config --version
           dir D:\Dev\libclang
 
