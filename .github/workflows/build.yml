@@ -2,7 +2,7 @@ name: Test build Qt
 
 on:
   push:
-    branches: [ "qt" ]
+    branches: [ "dev" ]
 
 jobs:
   prepare:
