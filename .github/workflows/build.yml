@@ -6,7 +6,7 @@ on:
 
 jobs:
   prepare:
-    name: set msys2 env
+    name: Test build clazy
     runs-on: 
       - windows-2022
 
@@ -55,9 +55,9 @@ jobs:
           set PATH=%CD%\ninja;%CD%\MinGW\bin;%PATH%
           cmake -DCMAKE_INSTALL_PREFIX=%CLAZY_INSTALL_DIR% -DCLANG_LIBRARY_IMPORT="%CLANG_INSTALL_DIR%/lib/libclang.a" -DCMAKE_BUILD_TYPE=Release -G "Ninja" -B./clazy/build -S./clazy
 
-          cmake --build "%CLAZY_SRC%/build" --parallel
+          cmake --build clazy/build --parallel
 
-          cmake --build "%CLAZY_SRC%/build" --parallel --target install
+          cmake --build clazy/build" --parallel --target install
 
 
 
