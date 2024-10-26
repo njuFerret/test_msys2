@@ -43,8 +43,7 @@ jobs:
           set CLANG_INSTALL_DIR=D:\Dev\libclang
           set CLAZY_INSTALL_DIR=%CLANG_INSTALL_DIR%
           set install_prefix=D:\Dev
-          # 第一个参数为Qt版本, 第二个参数开始为路径如MinGW\bin
-          # python ./utils/msys2_mod.py %QT_Ver% %CD%\MinGW\bin
+
           curl -L -o  %mingw%.7z  https://github.com/njuFerret/qt6_mingw_build/releases/download/deps/%mingw%.7z          
           curl -L -o ninja-win.zip https://github.com/ninja-build/ninja/releases/download/v1.12.1/ninja-win.zip
           curl -L -o libclang.7z https://github.com/njuFerret/actions/releases/download/build_20241025/libclang-19.1.2_%mingw%_shared.7z
@@ -52,12 +51,13 @@ jobs:
           7z x ninja-win.zip -oninja
           mkdir %CLANG_INSTALL_DIR%
           7z x libclang.7z -o%CLANG_INSTALL_DIR%\..\
-          set PATH=%CD%\ninja;%CD%\MinGW\bin;%PATH%
+          set PATH=%CLANG_INSTALL_DIR%\bin;%CD%\ninja;%CD%\MinGW\bin;%PATH%
           cmake -DCMAKE_INSTALL_PREFIX=%CLAZY_INSTALL_DIR% -DCLANG_LIBRARY_IMPORT="%CLANG_INSTALL_DIR%/lib/libclang.a" -DCMAKE_BUILD_TYPE=Release -G "Ninja" -B./clazy/build -S./clazy
 
           cmake --build clazy/build --parallel
 
           cmake --build clazy/build" --parallel --target install
+
 
 
 
