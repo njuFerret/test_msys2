@@ -5,7 +5,7 @@ on:
     branches: [ "dev" ]
 
 jobs:
-  prepare:
+  build:
     name: Test build Qt
     runs-on: 
       - windows-2022
@@ -125,38 +125,45 @@ jobs:
           # 7z x %_qt_src%.zip
           
           set PATH=%CD%\ninja;%CD%\MinGW\bin;%CLANG_INSTALL_DIR%\bin;%PATH%
+
+          7z a vulkanSDK_1.3.296.0.7z %CD%\deps\vulkanSDK
           
 
+      - name: upload zipped vulkanSDK file
+        uses:  actions/upload-artifact@v4.4.3
+        with:
+          name: 'vulkanSDK'
+          path: ./vulkanSDK_1.3.296.0.7z
 
 
+  release:
+    permissions:
+      contents: write
+  
+    runs-on: ubuntu-latest
+    needs: [build]
+
+    steps:
+    - name: Download openssl
+      uses: actions/download-artifact@v4
+      with:          
+        name: 'vulkanSDK'          
+        # merge-multiple: true
+        path: ./
+
+    - name: Unzip openssl
+      shell: bash
+      run: |
+        ls -l   
+        7z x vulkanSDK.7z 
+        ls -l vulkanSDK
+        
 
 
-
-      # - name: build
-      #   shell: msys2 {0}
-      #   run: |
-      #     # g++ -v        
-      #     echo QT_ROOT=$QT_ROOT  
-      #     cd openssl 
-      #     # ls -l          
-      #     ./config --prefix=$QT_ROOT/3rdParty/openssl          
-      #     echo ---------------------patch Makefile------------------
-      #     # 注意！注意！注意！
-      #     # 此处修改 Makefile 文件中 00-base-templates.conf 的绝对路径为相对路径，
-      #     # /d/path1/path2/Configurations/00-base-templates.conf => Configurations/00-base-templates.conf
-      #     sed -i "s|$(pwd)/||g" Makefile
-      #     echo ------------------------ compile... -------------------
-      #     mingw32-make -j
-      #     # 尼玛, 安装文档会出错！！！！
-      #     mingw32-make install_sw install_ssldirs -j
-      #     ls $QT_ROOT -l
-
-
-      - name: check build file
-        shell: cmd
-        run: |
-           echo show files in 'D:\Dev\libclang'
-           cd /d D:
-           dir D:\Dev\libclang
-           dir D:\Dev\libclang\bin
+    - name: Upload to Release
+      id: upload_to_release
+      uses: softprops/action-gh-release@v2
+      with:
+        files: "*.7z"
+        tag_name: deps_vulkanSDK
            
