@@ -135,7 +135,7 @@ jobs:
           set PATH=%CD%\ninja;%CD%\MinGW\bin;%CLANG_INSTALL_DIR%\bin;%PATH%          
           echo Qt_SRC_Dir: %_qt_src%
           echo cmake -GNinja -Wno-dev -Wno-deprecated-enum-float-conversion  -Wno-deprecated -Wno-comment -Wno-unknown-pragmas^
-            -DCMAKE_BUILD_TYPE=Release ^            
+            -DCMAKE_BUILD_TYPE=Release ^
             -DCMAKE_INSTALL_PREFIX=%QT_INSTALL_DIR% ^
             -DFEATURE_sql_mysql:BOOL=ON ^
             -DMySQL_INCLUDE_DIR=%MYSQL_DIR%/include ^
@@ -213,7 +213,7 @@ jobs:
             -B%_qt_src%/build 
 
           cmake -GNinja -Wno-dev -Wno-deprecated-enum-float-conversion  -Wno-deprecated -Wno-comment -Wno-unknown-pragmas^
-            -DCMAKE_BUILD_TYPE=Release ^            
+            -DCMAKE_BUILD_TYPE=Release ^
             -DCMAKE_INSTALL_PREFIX=%QT_INSTALL_DIR% ^
             -DFEATURE_sql_mysql:BOOL=ON ^
             -DMySQL_INCLUDE_DIR=%MYSQL_DIR%/include ^
