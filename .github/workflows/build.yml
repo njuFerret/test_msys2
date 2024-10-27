@@ -97,6 +97,7 @@ jobs:
           set _qt_src=qt-everywhere-src-%_qt_ver%
           set QT_INSTALL_DIR=%INSTALL_BASE%\Qt\%_qt_ver%\qt
           set _3rdparty=%INSTALL_BASE%\Qt\%_qt_ver%\3rdParty
+          set _build_src_dir=D:\qt
 
           set _deps_=%CD%\deps
           set MYSQL_DIR=%_deps_%\mysql
@@ -111,7 +112,7 @@ jobs:
           echo ---------------------------download ninja --------------------------------
           curl -L -o ninja-win.zip    https://github.com/ninja-build/ninja/releases/download/v1.12.1/ninja-win.zip
           echo ---------------------------download libclang.7z --------------------------------
-          curl -L -o libclang.7z      https://github.com/njuFerret/actions/releases/download/build_20241026/libclang-19.1.2_%mingw%_shared.7z
+          curl -L -o libclang.7z      https://github.com/njuFerret/actions/releases/download/build_20241026/libclang-19.1.2_%mingw%_static.7z
           echo ---------------------------download %_qt_src%.zip --------------------------------
           curl -L -o %_qt_src%.zip    https://download.qt.io/official_releases/qt/6.8/6.8.0/single/%_qt_src%.zip
           echo ---------------------------download openssl --------------------------------
@@ -129,7 +130,8 @@ jobs:
           7z x ninja-win.zip -oninja
           7z x libclang.7z -o%INSTALL_BASE%\
           7z x openssl.7z -o%_3rdparty%\
-          7z x %_qt_src%.zip
+          7z x %_qt_src%.zip 
+          move %_qt_src% %_build_src_dir%
 
           dir 
           
@@ -212,7 +214,7 @@ jobs:
             -DFEATURE_qtwebengine_quick_build:BOOL=OFF ^
             -DQT_FEATURE_qtpdf_build:BOOL=OFF ^
             -DQT_FEATURE_qtpdf_quick_build:BOOL=OFF ^
-            -S%_qt_src% ^
+            -S%_build_src_dir% ^
             -B%BUILD_DIR%
 
           type %_qt_src%\build\config.summary
@@ -226,7 +228,6 @@ jobs:
           cmake --build %BUILD_DIR% --parallel --target install_qch_docs
           cd %_qt_src%\qtcharts\plugins
           mkdir build & cd build & qmake .. & make release & make install & cd .. & rd /q /s build
-
 
           7z a -t7z -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on %_qt_ver%-%mingw%.7z %QT_INSTALL_DIR%\..\
           
