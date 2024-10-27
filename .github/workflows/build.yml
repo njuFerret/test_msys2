@@ -119,7 +119,7 @@ jobs:
           # vulkanSDK -t %_deps_%/vulkanSDK --am --al -c in
           echo ---------------------------download mysql --------------------------------
           curl -L -o mysql.7z         https://github.com/njuFerret/test_msys2/releases/download/deps/mysql.7z
-          echo ---------------------------download %vulkanSDK%.zip --------------------------------
+          echo ---------------------------download vulkanSDK --------------------------------
           curl -L -o vulkanSDK.7z     https://github.com/njuFerret/test_msys2/releases/download/deps_vulkanSDK/vulkanSDK_1.3.296.0.7z
           
           7z x vulkanSDK.7z -o%_deps_%\
@@ -131,7 +131,7 @@ jobs:
           7z x %_qt_src%.zip
 
           dir 
-
+          mkdir build
           set PATH=%CD%\ninja;%CD%\MinGW\bin;%CLANG_INSTALL_DIR%\bin;%PATH%          
           echo Qt_SRC_Dir: %_qt_src%
           cmake -GNinja -Wno-dev -Wno-deprecated-enum-float-conversion  -Wno-deprecated -Wno-comment -Wno-unknown-pragmas^
@@ -209,7 +209,7 @@ jobs:
             -DQT_FEATURE_qtpdf_build:BOOL=OFF ^
             -DQT_FEATURE_qtpdf_quick_build:BOOL=OFF ^
             -S%_qt_src% ^
-            -B%_qt_src%/build 
+            -B./build 
 
 
   #         7z a -t7z -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on vulkanSDK_1.3.296.0.7z %CD%\deps\vulkanSDK
