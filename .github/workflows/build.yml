@@ -95,7 +95,7 @@ jobs:
           set CLANG_INSTALL_DIR=%INSTALL_BASE%\libclang
           
           set _qt_src=qt-everywhere-src-%_qt_ver%
-          set _qt_install_prefix=%INSTALL_BASE%\Qt\%_qt_ver%\qt
+          set QT_INSTALL_DIR=%INSTALL_BASE%\Qt\%_qt_ver%\qt
           set _3rdparty=%INSTALL_BASE%\Qt\%_qt_ver%\3rdParty
 
           set _deps_=%CD%\deps
@@ -133,8 +133,9 @@ jobs:
           dir 
           mkdir build
           set PATH=%CD%\ninja;%CD%\MinGW\bin;%CLANG_INSTALL_DIR%\bin;%PATH%          
-          echo Qt_SRC_Dir: %_qt_src%
+          # echo Qt_SRC_Dir: %_qt_src%
           cmake -GNinja -Wno-dev -Wno-deprecated-enum-float-conversion  -Wno-deprecated -Wno-comment -Wno-unknown-pragmas^
+            -DCMAKE_BUILD_TYPE=Release ^            
             -DCMAKE_INSTALL_PREFIX=%QT_INSTALL_DIR% ^
             -DFEATURE_sql_mysql:BOOL=ON ^
             -DMySQL_INCLUDE_DIR=%MYSQL_DIR%/include ^
