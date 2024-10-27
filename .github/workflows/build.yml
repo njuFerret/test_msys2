@@ -132,7 +132,7 @@ jobs:
           7z x openssl.7z -o%_3rdparty%\
           7z x %_qt_src%.zip 
           move %_qt_src% %_build_src_dir%
-
+          dir D:
           dir 
           
           set PATH=%CD%\ninja;%CD%\MinGW\bin;%CLANG_INSTALL_DIR%\bin;%PATH%                             
@@ -217,7 +217,7 @@ jobs:
             -S%_build_src_dir% ^
             -B%BUILD_DIR%
 
-          type %_qt_src%\build\config.summary
+          type %_build_src_dir%\build\config.summary
           cmake --build %BUILD_DIR% --parallel
           cmake --install %BUILD_DIR% 
           copy %OPENSSL_DIR%\bin\libcrypto-3-x64.dll   %QT_INSTALL_DIR%\bin /y
@@ -226,7 +226,7 @@ jobs:
           copy %VULKAN_DIR%\vulkan-1.dll %QT_INSTALL_DIR%\bin /y
           cmake --build %BUILD_DIR% --parallel --target qch_docs 
           cmake --build %BUILD_DIR% --parallel --target install_qch_docs
-          cd %_qt_src%\qtcharts\plugins
+          cd %_build_src_dir%\qtcharts\plugins
           mkdir build & cd build & qmake .. & make release & make install & cd .. & rd /q /s build
 
           7z a -t7z -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on %_qt_ver%-%mingw%.7z %QT_INSTALL_DIR%\..\
