@@ -94,7 +94,7 @@ jobs:
           set INSTALL_BASE=D:\Dev
           set CLANG_INSTALL_DIR=%INSTALL_BASE%\libclang
           
-          set _qt_src=qt-everywhere-src-%_qtver%
+          set _qt_src=qt-everywhere-src-%_qt_ver%
           set _qt_install_prefix=%INSTALL_BASE%\Qt\%_qt_ver%\qt
           set _3rdparty=%INSTALL_BASE%\Qt\%_qt_ver%\3rdParty
 
@@ -105,15 +105,21 @@ jobs:
           mkdir %_deps_%          
           mkdir %_3rdparty%
 
-
+          echo ---------------------------download mingw --------------------------------
           curl -L -o %mingw%.7z       https://github.com/njuFerret/qt6_mingw_build/releases/download/deps/%mingw%.7z          
+          echo ---------------------------download ninja --------------------------------
           curl -L -o ninja-win.zip    https://github.com/ninja-build/ninja/releases/download/v1.12.1/ninja-win.zip
+          echo ---------------------------download libclang.7z --------------------------------
           curl -L -o libclang.7z      https://github.com/njuFerret/actions/releases/download/build_20241026/libclang-19.1.2_%mingw%_shared.7z
+          echo ---------------------------download %_qt_src%.zip --------------------------------
           curl -L -o %_qt_src%.zip    https://download.qt.io/official_releases/qt/6.8/6.8.0/single/%_qt_src%.zip
-          curl -L -o openssl.7z       https://github.com/njuFerret/actions/releases/download/build_20241026/openssl-%_openss_ver%_%mingw%.7z
+          echo ---------------------------download openssl --------------------------------
+          curl -L -o openssl.7z       https://github.com/njuFerret/actions/releases/download/build_20241026/openssl-%_openss_ver%_%mingw%.7z          
           # curl -L -o vulkanSDK.exe  https://sdk.lunarg.com/sdk/download/1.3.296.0/windows/VulkanSDK-1.3.296.0-Installer.exe
           # vulkanSDK -t %_deps_%/vulkanSDK --am --al -c in
+          echo ---------------------------download mysql --------------------------------
           curl -L -o mysql.7z         https://github.com/njuFerret/test_msys2/releases/download/deps/mysql.7z
+          echo ---------------------------download %vulkanSDK%.zip --------------------------------
           curl -L -o vulkanSDK.7z     https://github.com/njuFerret/test_msys2/releases/download/deps_vulkanSDK/vulkanSDK_1.3.296.0.7z
           
           7z x vulkanSDK.7z -o%_deps_%\
@@ -123,7 +129,9 @@ jobs:
           7z x libclang.7z -o%INSTALL_BASE%\
           7z x openssl.7z -o%_3rdparty%\
           7z x %_qt_src%.zip
-          
+
+          dir 
+
           set PATH=%CD%\ninja;%CD%\MinGW\bin;%CLANG_INSTALL_DIR%\bin;%PATH%          
           echo Qt_SRC_Dir: %_qt_src%
           cmake -GNinja -Wno-dev -Wno-deprecated-enum-float-conversion  -Wno-deprecated -Wno-comment -Wno-unknown-pragmas^
