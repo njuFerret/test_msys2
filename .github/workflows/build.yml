@@ -137,7 +137,6 @@ jobs:
           echo ---------------------------Config Qt --------------------------------
           cmake -GNinja -Wno-dev -Wno-deprecated-enum-float-conversion  -Wno-deprecated -Wno-comment -Wno-unknown-pragmas^
             -DCMAKE_BUILD_TYPE=Release ^
-            -DFEATURE_optimize_full ^
             -DFEATURE_optimize_size ^
             -DCMAKE_INSTALL_PREFIX=%QT_INSTALL_DIR% ^
             -DFEATURE_sql_mysql:BOOL=ON ^
