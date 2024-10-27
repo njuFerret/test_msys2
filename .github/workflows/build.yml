@@ -142,6 +142,7 @@ jobs:
             -DFEATURE_optimize_size:BOOL=ON ^
             -DCMAKE_INSTALL_PREFIX=%QT_INSTALL_DIR% ^
             -DFEATURE_sql_mysql:BOOL=ON ^
+            -DFEATURE_sql_psql:BOOL=OFF ^
             -DMySQL_INCLUDE_DIR=%MYSQL_DIR%/include ^
             -DOPENSSL_ROOT_DIR=%OPENSSL_DIR% ^
             -DOPENSSL_INCLUDE_DIR=%OPENSSL_DIR%/include ^
