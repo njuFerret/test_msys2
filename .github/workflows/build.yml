@@ -132,86 +132,8 @@ jobs:
 
           dir 
           
-          set PATH=%CD%\ninja;%CD%\MinGW\bin;%CLANG_INSTALL_DIR%\bin;%PATH%          
-          echo Qt_SRC_Dir: %_qt_src%
-          echo cmake -GNinja -Wno-dev -Wno-deprecated-enum-float-conversion  -Wno-deprecated -Wno-comment -Wno-unknown-pragmas^
-            -DCMAKE_BUILD_TYPE=Release ^
-            -DCMAKE_INSTALL_PREFIX=%QT_INSTALL_DIR% ^
-            -DFEATURE_sql_mysql:BOOL=ON ^
-            -DMySQL_INCLUDE_DIR=%MYSQL_DIR%/include ^
-            -DOPENSSL_ROOT_DIR=%OPENSSL_DIR% ^
-            -DOPENSSL_INCLUDE_DIR=%OPENSSL_DIR%/include ^
-            -DOPENSSL_SSL_LIBRARY=%OPENSSL_DIR%/lib64/libssl.a ^
-            -DOPENSSL_CRYPTO_LIBRARY=%OPENSSL_DIR%/lib64/libcrypto.a ^
-            -DFEATURE_opengl_desktop:BOOL=ON ^
-            -DFEATURE_opengl_dynamic:BOOL=ON ^
-            -DFEATURE_openssl:BOOL=ON ^
-            -DFEATURE_opensslv30:BOOL=ON ^
-            -DFEATURE_openssl_runtime:BOOL=ON ^
-            -DMySQL_LIBRARY=%MYSQL_DIR%/lib/libmariadb.a ^
-            -DFEATURE_qt3d_vulkan:BOOL=ON ^
-            -DFEATURE_vulkan:BOOL=ON ^
-            -DVulkan_LIBRARY=%VULKAN_DIR%/Lib/vulkan-1.a ^
-            -DVulkan_INCLUDE_DIR=%VULKAN_DIR%/Include ^
-            -DVulkan_GLSLANG_VALIDATOR_EXECUTABLE=%VULKAN_DIR%/bin/glslangValidator.exe ^
-            -DFEATURE_qt3d_rhi_renderer:BOOL=ON ^
-            -DVulkan_GLSLC_EXECUTABLE=%VULKAN_DIR%/bin/glslc.exe ^
-            -DFEATURE_vkb_lang_ar_AR:BOOL=OFF ^
-            -DFEATURE_vkb_lang_bg_BG:BOOL=OFF ^
-            -DFEATURE_vkb_lang_cs_CZ:BOOL=OFF ^
-            -DFEATURE_vkb_lang_da_DK:BOOL=OFF ^
-            -DFEATURE_vkb_lang_de_DE:BOOL=OFF ^
-            -DFEATURE_vkb_lang_el_GR:BOOL=OFF ^
-            -DFEATURE_vkb_lang_en_GB:BOOL=OFF ^
-            -DFEATURE_vkb_lang_es_ES:BOOL=OFF ^
-            -DFEATURE_vkb_lang_es_MX:BOOL=OFF ^
-            -DFEATURE_vkb_lang_et_EE:BOOL=OFF ^
-            -DFEATURE_vkb_lang_fa_FA:BOOL=OFF ^
-            -DFEATURE_vkb_lang_fi_FI:BOOL=OFF ^
-            -DFEATURE_vkb_lang_fr_CA:BOOL=OFF ^
-            -DFEATURE_vkb_lang_fr_FR:BOOL=OFF ^
-            -DFEATURE_vkb_lang_he_IL:BOOL=OFF ^
-            -DFEATURE_vkb_lang_hi_IN:BOOL=OFF ^
-            -DFEATURE_vkb_lang_hr_HR:BOOL=OFF ^
-            -DFEATURE_vkb_lang_hu_HU:BOOL=OFF ^
-            -DFEATURE_vkb_lang_id_ID:BOOL=OFF ^
-            -DFEATURE_vkb_lang_it_IT:BOOL=OFF ^
-            -DFEATURE_vkb_lang_ja_JP:BOOL=OFF ^
-            -DFEATURE_vkb_lang_ko_KR:BOOL=OFF ^
-            -DFEATURE_vkb_lang_ms_MY:BOOL=OFF ^
-            -DFEATURE_vkb_lang_nb_NO:BOOL=OFF ^
-            -DFEATURE_vkb_lang_nl_NL:BOOL=OFF ^
-            -DFEATURE_vkb_lang_pl_PL:BOOL=OFF ^
-            -DFEATURE_vkb_lang_pt_BR:BOOL=OFF ^
-            -DFEATURE_vkb_lang_pt_PT:BOOL=OFF ^
-            -DFEATURE_vkb_lang_ro_RO:BOOL=OFF ^
-            -DFEATURE_vkb_lang_ru_RU:BOOL=OFF ^
-            -DFEATURE_vkb_lang_sk_SK:BOOL=OFF ^
-            -DFEATURE_vkb_lang_sl_SI:BOOL=OFF ^
-            -DFEATURE_vkb_lang_sq_AL:BOOL=OFF ^
-            -DFEATURE_vkb_lang_sr_SP:BOOL=OFF ^
-            -DFEATURE_vkb_lang_sv_SE:BOOL=OFF ^
-            -DFEATURE_vkb_lang_th_TH:BOOL=OFF ^
-            -DFEATURE_vkb_lang_tr_TR:BOOL=OFF ^
-            -DFEATURE_vkb_lang_uk_UA:BOOL=OFF ^
-            -DFEATURE_vkb_lang_vi_VN:BOOL=OFF ^
-            -DFEATURE_vkb_lang_zh_TW:BOOL=OFF ^
-            -DFEATURE_zhuyin:BOOL=OFF ^
-            -DFEATURE_cangjie:BOOL=OFF ^
-            -DFEATURE_cxx20:BOOL=ON ^
-            -DFEATURE_cxx2a:BOOL=ON ^
-            -DBUILD_WITH_PCH:BOOL=ON ^
-            -DQT_BUILD_TESTS_BY_DEFAULT:BOOL=OFF ^
-            -DQT_BUILD_EXAMPLES_AS_EXTERNAL:BOOL=OFF ^
-            -DQT_BUILD_EXAMPLES:BOOL=ON ^
-            -DFEATURE_qtwebengine_build:BOOL=OFF ^
-            -DFEATURE_qtwebengine_core_build:BOOL=OFF ^
-            -DFEATURE_qtwebengine_quick_build:BOOL=OFF ^
-            -DQT_FEATURE_qtpdf_build:BOOL=OFF ^
-            -DQT_FEATURE_qtpdf_quick_build:BOOL=OFF ^
-            -S%_qt_src% ^
-            -B%_qt_src%/build 
-
+          set PATH=%CD%\ninja;%CD%\MinGW\bin;%CLANG_INSTALL_DIR%\bin;%PATH%                             
+          echo ---------------------------Config Qt --------------------------------
           cmake -GNinja -Wno-dev -Wno-deprecated-enum-float-conversion  -Wno-deprecated -Wno-comment -Wno-unknown-pragmas^
             -DCMAKE_BUILD_TYPE=Release ^
             -DCMAKE_INSTALL_PREFIX=%QT_INSTALL_DIR% ^
@@ -288,8 +210,11 @@ jobs:
             -DQT_FEATURE_qtpdf_build:BOOL=OFF ^
             -DQT_FEATURE_qtpdf_quick_build:BOOL=OFF ^
             -S%_qt_src% ^
-            -B%_qt_src%/build 
+            -B%_qt_src%/build
 
+          dir %_qt_src%\build
+
+          type %_qt_src%\build\config.summary
   #         7z a -t7z -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on vulkanSDK_1.3.296.0.7z %CD%\deps\vulkanSDK
           
 
