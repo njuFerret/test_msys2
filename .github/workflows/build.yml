@@ -46,7 +46,7 @@ jobs:
 
       #     curl -L -o  %mingw%.7z  https://github.com/njuFerret/actions/releases/download/deps/%mingw%.7z          
       #     curl -L -o ninja-win.zip https://github.com/ninja-build/ninja/releases/download/v1.12.1/ninja-win.zip
-      #     curl -L -o libclang.7z https://github.com/njuFerret/actions/releases/download/build_20241027/libclang-19.1.2_%mingw%_shared.7z
+      #     curl -L -o libclang.7z https://github.com/njuFerret/actions/releases/download/build_20241029/libclang-19.1.2_%mingw%_shared.7z
       #     7z x %mingw%.7z
       #     7z x ninja-win.zip -oninja
       #     mkdir %CLANG_INSTALL_DIR%
@@ -112,11 +112,11 @@ jobs:
           echo ---------------------------download ninja --------------------------------
           curl -L -o ninja-win.zip    https://github.com/ninja-build/ninja/releases/download/v1.12.1/ninja-win.zip
           echo ---------------------------download libclang.7z --------------------------------
-          curl -L -o libclang.7z      https://github.com/njuFerret/actions/releases/download/build_20241027/libclang-19.1.2_%mingw%_static.7z
+          curl -L -o libclang.7z      https://github.com/njuFerret/actions/releases/download/build_20241029/libclang-19.1.2_%mingw%_static.7z
           echo ---------------------------download %_qt_src%.zip --------------------------------
           curl -L -o %_qt_src%.zip    https://download.qt.io/official_releases/qt/6.8/6.8.0/single/%_qt_src%.zip
           echo ---------------------------download openssl --------------------------------
-          curl -L -o openssl.7z       https://github.com/njuFerret/actions/releases/download/build_20241027/openssl-%_openss_ver%_%mingw%.7z          
+          curl -L -o openssl.7z       https://github.com/njuFerret/actions/releases/download/build_20241029/openssl-%_openss_ver%_%mingw%.7z          
           # curl -L -o vulkanSDK.exe  https://sdk.lunarg.com/sdk/download/1.3.296.0/windows/VulkanSDK-1.3.296.0-Installer.exe
           # vulkanSDK -t %_deps_%/vulkanSDK --am --al -c in
           echo ---------------------------download mysql --------------------------------
