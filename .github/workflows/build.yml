@@ -270,6 +270,7 @@ jobs:
           set BUILD_DIR=D:\build          
 
           # python ./utils/qt6-build-post-process.py
+          mkdir %QT_INSTALL_DIR%\..
           echo test_test > %QT_INSTALL_DIR%\..\test.txt
 
           7z a -t7z -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on %_qt_ver%_%mingw%.7z %QT_INSTALL_DIR%\..\
