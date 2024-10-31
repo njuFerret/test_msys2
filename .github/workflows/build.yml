@@ -62,28 +62,8 @@ jobs:
       #     cmake --build clazy/build --parallel
 
       #     cmake --build clazy/build" --parallel --target install
-      - name: toolsets Test 
-        shell: cmd
-        # system(windows-2022) has shipped with cmake/7zip
-        run: |
-          echo -------------------- test cmake --------------------------
-          cmake --version | findstr version
-          echo -------------------- test ninja --------------------------
-          ninja --version          
-          echo -------------------- test python --------------------------
-          python -V
-          echo -------------------- test perl --------------------------
-          perl -v | findstr version                        
-          echo -------------------- test git --------------------------
-          git --version
-          echo -------------------- test git --------------------------
-          ruby --version          
-          echo -------------------- test 7z --------------------------
-          7z | findstr 7-Zip
-          echo -------------------- test end --------------------------
 
-
-      - name: Config Enviroment and build
+      - name: Config Enviroment
         shell: cmd
         run: |
           set mingw=MinGW-x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1
@@ -131,11 +111,57 @@ jobs:
           7z x libclang.7z -o%INSTALL_BASE%\
           7z x openssl.7z -o%_3rdparty%\
           7z x %_qt_src%.zip 
-          # move %_qt_src% %_build_src_dir%          
+  
           dir 
+
+      - name: toolsets Test 
+        shell: cmd
+        # system(windows-2022) has shipped with cmake/7zip
+        run: |
+          set INSTALL_BASE=D:\Dev
+          set CLANG_INSTALL_DIR=%INSTALL_BASE%\libclang        
+          set PATH=%CD%\ninja;%CD%\MinGW\bin;%CLANG_INSTALL_DIR%\bin;%PATH%      
+          echo -------------------- test cmake --------------------------
+          cmake --version | findstr version
+          echo -------------------- test ninja --------------------------
+          ninja --version          
+          echo -------------------- test python --------------------------
+          python -V
+          echo -------------------- test perl --------------------------
+          perl -v | findstr version                        
+          echo -------------------- test git --------------------------
+          git --version
+          echo -------------------- test git --------------------------
+          ruby --version          
+          echo -------------------- test 7z --------------------------
+          7z | findstr 7-Zip
+          echo -------------------- test end --------------------------
+
+
+      - name: Config & build & install Qt
+        shell: cmd
+        run: |          
+          set mingw=MinGW-x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1
+          set START=%CD%
+          set _qt_ver=6.8.0
+          set _openss_ver=3.4.0
           
-          set PATH=%CD%\ninja;%CD%\MinGW\bin;%CLANG_INSTALL_DIR%\bin;%PATH%                             
-          echo ---------------------------Config Qt --------------------------------
+          set INSTALL_BASE=D:\Dev
+          set CLANG_INSTALL_DIR=%INSTALL_BASE%\libclang
+          
+          set _qt_src=qt-everywhere-src-%_qt_ver%
+          set QT_INSTALL_DIR=%INSTALL_BASE%\Qt\%_qt_ver%\qt
+          set _3rdparty=%INSTALL_BASE%\Qt\%_qt_ver%\3rdParty
+
+          set _deps_=%CD%\deps
+          set MYSQL_DIR=%_deps_%\mysql
+          set VULKAN_DIR=%_deps_%\vulkanSDK
+          set OPENSSL_DIR=%_3rdparty%\openssl
+          set BUILD_DIR=D:\build
+
+          set PATH=%CD%\ninja;%CD%\MinGW\bin;%CLANG_INSTALL_DIR%\bin;%PATH%
+                                 
+          echo ---------------------------Config Qt %_qt_ver%--------------------------------
           cmake -GNinja -Wno-dev -Wno-deprecated-enum-float-conversion  -Wno-deprecated -Wno-comment -Wno-unknown-pragmas^
             -DCMAKE_BUILD_TYPE=Release ^
             -DFEATURE_optimize_full:BOOL=ON ^
@@ -218,21 +244,79 @@ jobs:
             -B%BUILD_DIR%
 
           type %BUILD_DIR%\config.summary
+
+          echo ---------------------------build Qt %_qt_ver% --------------------------------
+
           cmake --build %BUILD_DIR% --parallel
           cmake --install %BUILD_DIR% 
+
+          copy %BUILD_DIR%\config.summary  %QT_INSTALL_DIR%\..
+
+      - name: Config Qt and build
+        shell: cmd
+        run: |      
+          set mingw=MinGW-x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1
+          set START=%CD%
+          set _qt_ver=6.8.0
+          set _openss_ver=3.4.0
+          
+          set INSTALL_BASE=D:\Dev
+          set CLANG_INSTALL_DIR=%INSTALL_BASE%\libclang
+          
+          set _qt_src=qt-everywhere-src-%_qt_ver%
+          set QT_INSTALL_DIR=%INSTALL_BASE%\Qt\%_qt_ver%\qt
+          set _3rdparty=%INSTALL_BASE%\Qt\%_qt_ver%\3rdParty
+
+          set _deps_=%CD%\deps
+          set MYSQL_DIR=%_deps_%\mysql
+          set VULKAN_DIR=%_deps_%\vulkanSDK
+          set OPENSSL_DIR=%_3rdparty%\openssl
+          set BUILD_DIR=D:\build
+
+          set PATH=%CD%\ninja;%CD%\MinGW\bin;%QT_INSTALL_DIR%\bin;%CLANG_INSTALL_DIR%\bin;%PATH%  
+
+          echo ---------------------------copy  openssl (2) dlls --------------------------------
           copy %OPENSSL_DIR%\bin\libcrypto-3-x64.dll   %QT_INSTALL_DIR%\bin /y
           copy %OPENSSL_DIR%\bin\libssl-3-x64.dll %QT_INSTALL_DIR%\bin /y
+          echo ---------------------------copy  libmariadb.dll --------------------------------
           copy %MYSQL_DIR%\lib\libmariadb.dll %QT_INSTALL_DIR%\bin /y
+          echo ---------------------------copy  vulkan-1.dll --------------------------------
           copy %VULKAN_DIR%\vulkan-1.dll %QT_INSTALL_DIR%\bin /y
+
+
           cmake --build %BUILD_DIR% --parallel --target qch_docs 
           cmake --build %BUILD_DIR% --parallel --target install_qch_docs
+          echo ---------------------------build qtcharts plugins --------------------------------
           cd %_qt_src%\qtcharts\plugins
           mkdir build & cd build & qmake .. & make release & make install & cd .. & rd /q /s build
 
-          7z a -t7z -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on %_qt_ver%-%mingw%.7z %QT_INSTALL_DIR%\..\
-          
 
-      - name: upload zipped vulkanSDK file
+      - name: post process
+        shell: cmd
+        run: |     
+          set mingw=MinGW-x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1
+          set START=%CD%
+          set _qt_ver=6.8.0
+          set _openss_ver=3.4.0
+
+          set INSTALL_BASE=D:\Dev
+          set CLANG_INSTALL_DIR=%INSTALL_BASE%\libclang
+          
+          set _qt_src=qt-everywhere-src-%_qt_ver%
+          set QT_INSTALL_DIR=%INSTALL_BASE%\Qt\%_qt_ver%\qt
+          set _3rdparty=%INSTALL_BASE%\Qt\%_qt_ver%\3rdParty
+
+          set _deps_=%CD%\deps
+          set MYSQL_DIR=%_deps_%\mysql
+          set VULKAN_DIR=%_deps_%\vulkanSDK
+          set OPENSSL_DIR=%_3rdparty%\openssl
+          set BUILD_DIR=D:\build          
+
+          python ./utils/qt6-build-post-process.py
+
+          7z a -t7z -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on %_qt_ver%-%mingw%.7z %QT_INSTALL_DIR%\..\
+
+      - name: upload zipped qt files
         uses:  actions/upload-artifact@v4.4.3
         with:
           name: 'qt-680'
