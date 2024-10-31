@@ -15,7 +15,7 @@ from datetime import datetime
 import logging
 import shutil
 import pathlib
-import os
+import sys
 
 
 START = datetime.now()
@@ -117,11 +117,11 @@ def main(qt_src, qt_install_dir):
     logging.info(f"删除无用语言包....")
     remove_unused_lang_pack(qt_install_dir)
 
-    logging.info(f"复制 examples 文件夹....")
-    copy_examples_src(qt_install_dir, qt_src)
+    # logging.info(f"复制 examples 文件夹....")
+    # copy_examples_src(qt_install_dir, qt_src)
 
 
 if __name__ == '__main__':
     logging.info('脚本 % s 开始运行, 时间：% s ' % (thisScript.name, datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
-    main(qt_src=os.argv[1], qt_install_dir=os.argv[2])
+    main(qt_src=sys.argv[1], qt_install_dir=sys.argv[2])
     logging.info('脚本 %s 运行完成, 时间：%s ' % (thisScript.name, datetime.now().strftime('%Y-%m-%d %H:%M:%S')))

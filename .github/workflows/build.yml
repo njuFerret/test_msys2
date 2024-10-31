@@ -95,157 +95,157 @@ jobs:
           echo -------------------- test end --------------------------
 
 
-      - name: Config & build & install Qt
-        shell: cmd
-        run: |          
-          set mingw=MinGW-x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1
-          set START=%CD%
-          set _qt_ver=6.8.0
-          set _openss_ver=3.4.0
+      # - name: Config & build & install Qt
+      #   shell: cmd
+      #   run: |          
+      #     set mingw=MinGW-x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1
+      #     set START=%CD%
+      #     set _qt_ver=6.8.0
+      #     set _openss_ver=3.4.0
           
-          set INSTALL_BASE=D:\Dev
-          set CLANG_INSTALL_DIR=%INSTALL_BASE%\libclang
+      #     set INSTALL_BASE=D:\Dev
+      #     set CLANG_INSTALL_DIR=%INSTALL_BASE%\libclang
           
-          set _qt_src=qt-everywhere-src-%_qt_ver%
-          set QT_INSTALL_DIR=%INSTALL_BASE%\Qt\%_qt_ver%\qt
-          set _3rdparty=%INSTALL_BASE%\Qt\%_qt_ver%\3rdParty
+      #     set _qt_src=qt-everywhere-src-%_qt_ver%
+      #     set QT_INSTALL_DIR=%INSTALL_BASE%\Qt\%_qt_ver%\qt
+      #     set _3rdparty=%INSTALL_BASE%\Qt\%_qt_ver%\3rdParty
 
-          set _deps_=%CD%\deps
-          set MYSQL_DIR=%_deps_%\mysql
-          set VULKAN_DIR=%_deps_%\vulkanSDK
-          set OPENSSL_DIR=%_3rdparty%\openssl
-          set BUILD_DIR=D:\build
+      #     set _deps_=%CD%\deps
+      #     set MYSQL_DIR=%_deps_%\mysql
+      #     set VULKAN_DIR=%_deps_%\vulkanSDK
+      #     set OPENSSL_DIR=%_3rdparty%\openssl
+      #     set BUILD_DIR=D:\build
 
-          set PATH=%CD%\ninja;%CD%\MinGW\bin;%CLANG_INSTALL_DIR%\bin;%PATH%
+      #     set PATH=%CD%\ninja;%CD%\MinGW\bin;%CLANG_INSTALL_DIR%\bin;%PATH%
                                  
-          echo ---------------------------Config Qt %_qt_ver%--------------------------------
-          cmake -GNinja -Wno-dev -Wno-deprecated-enum-float-conversion  -Wno-deprecated -Wno-comment -Wno-unknown-pragmas^
-            -DCMAKE_BUILD_TYPE=Release ^
-            -DFEATURE_optimize_full:BOOL=ON ^
-            -DFEATURE_optimize_size:BOOL=ON ^
-            -DCMAKE_INSTALL_PREFIX=%QT_INSTALL_DIR% ^
-            -DFEATURE_sql_mysql:BOOL=ON ^
-            -DFEATURE_sql_psql:BOOL=OFF ^
-            -DMySQL_INCLUDE_DIR=%MYSQL_DIR%/include ^
-            -DOPENSSL_ROOT_DIR=%OPENSSL_DIR% ^
-            -DOPENSSL_INCLUDE_DIR=%OPENSSL_DIR%/include ^
-            -DOPENSSL_SSL_LIBRARY=%OPENSSL_DIR%/lib64/libssl.a ^
-            -DOPENSSL_CRYPTO_LIBRARY=%OPENSSL_DIR%/lib64/libcrypto.a ^
-            -DFEATURE_opengl_desktop:BOOL=ON ^
-            -DFEATURE_opengl_dynamic:BOOL=ON ^
-            -DFEATURE_openssl:BOOL=ON ^
-            -DFEATURE_opensslv30:BOOL=ON ^
-            -DFEATURE_openssl_runtime:BOOL=ON ^
-            -DMySQL_LIBRARY=%MYSQL_DIR%/lib/libmariadb.a ^
-            -DFEATURE_qt3d_vulkan:BOOL=ON ^
-            -DFEATURE_vulkan:BOOL=ON ^
-            -DVulkan_LIBRARY=%VULKAN_DIR%/Lib/vulkan-1.a ^
-            -DVulkan_INCLUDE_DIR=%VULKAN_DIR%/Include ^
-            -DVulkan_GLSLANG_VALIDATOR_EXECUTABLE=%VULKAN_DIR%/bin/glslangValidator.exe ^
-            -DFEATURE_qt3d_rhi_renderer:BOOL=ON ^
-            -DVulkan_GLSLC_EXECUTABLE=%VULKAN_DIR%/bin/glslc.exe ^
-            -DFEATURE_vkb_lang_ar_AR:BOOL=OFF ^
-            -DFEATURE_vkb_lang_bg_BG:BOOL=OFF ^
-            -DFEATURE_vkb_lang_cs_CZ:BOOL=OFF ^
-            -DFEATURE_vkb_lang_da_DK:BOOL=OFF ^
-            -DFEATURE_vkb_lang_de_DE:BOOL=OFF ^
-            -DFEATURE_vkb_lang_el_GR:BOOL=OFF ^
-            -DFEATURE_vkb_lang_en_GB:BOOL=OFF ^
-            -DFEATURE_vkb_lang_es_ES:BOOL=OFF ^
-            -DFEATURE_vkb_lang_es_MX:BOOL=OFF ^
-            -DFEATURE_vkb_lang_et_EE:BOOL=OFF ^
-            -DFEATURE_vkb_lang_fa_FA:BOOL=OFF ^
-            -DFEATURE_vkb_lang_fi_FI:BOOL=OFF ^
-            -DFEATURE_vkb_lang_fr_CA:BOOL=OFF ^
-            -DFEATURE_vkb_lang_fr_FR:BOOL=OFF ^
-            -DFEATURE_vkb_lang_he_IL:BOOL=OFF ^
-            -DFEATURE_vkb_lang_hi_IN:BOOL=OFF ^
-            -DFEATURE_vkb_lang_hr_HR:BOOL=OFF ^
-            -DFEATURE_vkb_lang_hu_HU:BOOL=OFF ^
-            -DFEATURE_vkb_lang_id_ID:BOOL=OFF ^
-            -DFEATURE_vkb_lang_it_IT:BOOL=OFF ^
-            -DFEATURE_vkb_lang_ja_JP:BOOL=OFF ^
-            -DFEATURE_vkb_lang_ko_KR:BOOL=OFF ^
-            -DFEATURE_vkb_lang_ms_MY:BOOL=OFF ^
-            -DFEATURE_vkb_lang_nb_NO:BOOL=OFF ^
-            -DFEATURE_vkb_lang_nl_NL:BOOL=OFF ^
-            -DFEATURE_vkb_lang_pl_PL:BOOL=OFF ^
-            -DFEATURE_vkb_lang_pt_BR:BOOL=OFF ^
-            -DFEATURE_vkb_lang_pt_PT:BOOL=OFF ^
-            -DFEATURE_vkb_lang_ro_RO:BOOL=OFF ^
-            -DFEATURE_vkb_lang_ru_RU:BOOL=OFF ^
-            -DFEATURE_vkb_lang_sk_SK:BOOL=OFF ^
-            -DFEATURE_vkb_lang_sl_SI:BOOL=OFF ^
-            -DFEATURE_vkb_lang_sq_AL:BOOL=OFF ^
-            -DFEATURE_vkb_lang_sr_SP:BOOL=OFF ^
-            -DFEATURE_vkb_lang_sv_SE:BOOL=OFF ^
-            -DFEATURE_vkb_lang_th_TH:BOOL=OFF ^
-            -DFEATURE_vkb_lang_tr_TR:BOOL=OFF ^
-            -DFEATURE_vkb_lang_uk_UA:BOOL=OFF ^
-            -DFEATURE_vkb_lang_vi_VN:BOOL=OFF ^
-            -DFEATURE_vkb_lang_zh_TW:BOOL=OFF ^
-            -DFEATURE_zhuyin:BOOL=OFF ^
-            -DFEATURE_cangjie:BOOL=OFF ^
-            -DFEATURE_cxx20:BOOL=ON ^
-            -DFEATURE_cxx2a:BOOL=ON ^
-            -DBUILD_WITH_PCH:BOOL=ON ^
-            -DQT_BUILD_TESTS_BY_DEFAULT:BOOL=OFF ^
-            -DQT_BUILD_EXAMPLES_AS_EXTERNAL:BOOL=OFF ^
-            -DQT_BUILD_EXAMPLES:BOOL=ON ^
-            -DFEATURE_qtwebengine_build:BOOL=OFF ^
-            -DFEATURE_qtwebengine_core_build:BOOL=OFF ^
-            -DFEATURE_qtwebengine_quick_build:BOOL=OFF ^
-            -DQT_FEATURE_qtpdf_build:BOOL=OFF ^
-            -DQT_FEATURE_qtpdf_quick_build:BOOL=OFF ^
-            -S%_qt_src% ^
-            -B%BUILD_DIR%
+      #     echo ---------------------------Config Qt %_qt_ver%--------------------------------
+      #     cmake -GNinja -Wno-dev -Wno-deprecated-enum-float-conversion  -Wno-deprecated -Wno-comment -Wno-unknown-pragmas^
+      #       -DCMAKE_BUILD_TYPE=Release ^
+      #       -DFEATURE_optimize_full:BOOL=ON ^
+      #       -DFEATURE_optimize_size:BOOL=ON ^
+      #       -DCMAKE_INSTALL_PREFIX=%QT_INSTALL_DIR% ^
+      #       -DFEATURE_sql_mysql:BOOL=ON ^
+      #       -DFEATURE_sql_psql:BOOL=OFF ^
+      #       -DMySQL_INCLUDE_DIR=%MYSQL_DIR%/include ^
+      #       -DOPENSSL_ROOT_DIR=%OPENSSL_DIR% ^
+      #       -DOPENSSL_INCLUDE_DIR=%OPENSSL_DIR%/include ^
+      #       -DOPENSSL_SSL_LIBRARY=%OPENSSL_DIR%/lib64/libssl.a ^
+      #       -DOPENSSL_CRYPTO_LIBRARY=%OPENSSL_DIR%/lib64/libcrypto.a ^
+      #       -DFEATURE_opengl_desktop:BOOL=ON ^
+      #       -DFEATURE_opengl_dynamic:BOOL=ON ^
+      #       -DFEATURE_openssl:BOOL=ON ^
+      #       -DFEATURE_opensslv30:BOOL=ON ^
+      #       -DFEATURE_openssl_runtime:BOOL=ON ^
+      #       -DMySQL_LIBRARY=%MYSQL_DIR%/lib/libmariadb.a ^
+      #       -DFEATURE_qt3d_vulkan:BOOL=ON ^
+      #       -DFEATURE_vulkan:BOOL=ON ^
+      #       -DVulkan_LIBRARY=%VULKAN_DIR%/Lib/vulkan-1.a ^
+      #       -DVulkan_INCLUDE_DIR=%VULKAN_DIR%/Include ^
+      #       -DVulkan_GLSLANG_VALIDATOR_EXECUTABLE=%VULKAN_DIR%/bin/glslangValidator.exe ^
+      #       -DFEATURE_qt3d_rhi_renderer:BOOL=ON ^
+      #       -DVulkan_GLSLC_EXECUTABLE=%VULKAN_DIR%/bin/glslc.exe ^
+      #       -DFEATURE_vkb_lang_ar_AR:BOOL=OFF ^
+      #       -DFEATURE_vkb_lang_bg_BG:BOOL=OFF ^
+      #       -DFEATURE_vkb_lang_cs_CZ:BOOL=OFF ^
+      #       -DFEATURE_vkb_lang_da_DK:BOOL=OFF ^
+      #       -DFEATURE_vkb_lang_de_DE:BOOL=OFF ^
+      #       -DFEATURE_vkb_lang_el_GR:BOOL=OFF ^
+      #       -DFEATURE_vkb_lang_en_GB:BOOL=OFF ^
+      #       -DFEATURE_vkb_lang_es_ES:BOOL=OFF ^
+      #       -DFEATURE_vkb_lang_es_MX:BOOL=OFF ^
+      #       -DFEATURE_vkb_lang_et_EE:BOOL=OFF ^
+      #       -DFEATURE_vkb_lang_fa_FA:BOOL=OFF ^
+      #       -DFEATURE_vkb_lang_fi_FI:BOOL=OFF ^
+      #       -DFEATURE_vkb_lang_fr_CA:BOOL=OFF ^
+      #       -DFEATURE_vkb_lang_fr_FR:BOOL=OFF ^
+      #       -DFEATURE_vkb_lang_he_IL:BOOL=OFF ^
+      #       -DFEATURE_vkb_lang_hi_IN:BOOL=OFF ^
+      #       -DFEATURE_vkb_lang_hr_HR:BOOL=OFF ^
+      #       -DFEATURE_vkb_lang_hu_HU:BOOL=OFF ^
+      #       -DFEATURE_vkb_lang_id_ID:BOOL=OFF ^
+      #       -DFEATURE_vkb_lang_it_IT:BOOL=OFF ^
+      #       -DFEATURE_vkb_lang_ja_JP:BOOL=OFF ^
+      #       -DFEATURE_vkb_lang_ko_KR:BOOL=OFF ^
+      #       -DFEATURE_vkb_lang_ms_MY:BOOL=OFF ^
+      #       -DFEATURE_vkb_lang_nb_NO:BOOL=OFF ^
+      #       -DFEATURE_vkb_lang_nl_NL:BOOL=OFF ^
+      #       -DFEATURE_vkb_lang_pl_PL:BOOL=OFF ^
+      #       -DFEATURE_vkb_lang_pt_BR:BOOL=OFF ^
+      #       -DFEATURE_vkb_lang_pt_PT:BOOL=OFF ^
+      #       -DFEATURE_vkb_lang_ro_RO:BOOL=OFF ^
+      #       -DFEATURE_vkb_lang_ru_RU:BOOL=OFF ^
+      #       -DFEATURE_vkb_lang_sk_SK:BOOL=OFF ^
+      #       -DFEATURE_vkb_lang_sl_SI:BOOL=OFF ^
+      #       -DFEATURE_vkb_lang_sq_AL:BOOL=OFF ^
+      #       -DFEATURE_vkb_lang_sr_SP:BOOL=OFF ^
+      #       -DFEATURE_vkb_lang_sv_SE:BOOL=OFF ^
+      #       -DFEATURE_vkb_lang_th_TH:BOOL=OFF ^
+      #       -DFEATURE_vkb_lang_tr_TR:BOOL=OFF ^
+      #       -DFEATURE_vkb_lang_uk_UA:BOOL=OFF ^
+      #       -DFEATURE_vkb_lang_vi_VN:BOOL=OFF ^
+      #       -DFEATURE_vkb_lang_zh_TW:BOOL=OFF ^
+      #       -DFEATURE_zhuyin:BOOL=OFF ^
+      #       -DFEATURE_cangjie:BOOL=OFF ^
+      #       -DFEATURE_cxx20:BOOL=ON ^
+      #       -DFEATURE_cxx2a:BOOL=ON ^
+      #       -DBUILD_WITH_PCH:BOOL=ON ^
+      #       -DQT_BUILD_TESTS_BY_DEFAULT:BOOL=OFF ^
+      #       -DQT_BUILD_EXAMPLES_AS_EXTERNAL:BOOL=OFF ^
+      #       -DQT_BUILD_EXAMPLES:BOOL=ON ^
+      #       -DFEATURE_qtwebengine_build:BOOL=OFF ^
+      #       -DFEATURE_qtwebengine_core_build:BOOL=OFF ^
+      #       -DFEATURE_qtwebengine_quick_build:BOOL=OFF ^
+      #       -DQT_FEATURE_qtpdf_build:BOOL=OFF ^
+      #       -DQT_FEATURE_qtpdf_quick_build:BOOL=OFF ^
+      #       -S%_qt_src% ^
+      #       -B%BUILD_DIR%
 
-          type %BUILD_DIR%\config.summary
+      #     type %BUILD_DIR%\config.summary
 
-          echo ---------------------------build Qt %_qt_ver% --------------------------------
+      #     echo ---------------------------build Qt %_qt_ver% --------------------------------
 
-          cmake --build %BUILD_DIR% --parallel
-          cmake --install %BUILD_DIR% 
+      #     cmake --build %BUILD_DIR% --parallel
+      #     cmake --install %BUILD_DIR% 
 
-          copy %BUILD_DIR%\config.summary  %QT_INSTALL_DIR%\..
+      #     copy %BUILD_DIR%\config.summary  %QT_INSTALL_DIR%\..
 
-      - name: Config Qt and build
-        shell: cmd
-        run: |      
-          set mingw=MinGW-x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1
-          set START=%CD%
-          set _qt_ver=6.8.0
-          set _openss_ver=3.4.0
+      # - name: Config Qt and build
+      #   shell: cmd
+      #   run: |      
+      #     set mingw=MinGW-x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1
+      #     set START=%CD%
+      #     set _qt_ver=6.8.0
+      #     set _openss_ver=3.4.0
           
-          set INSTALL_BASE=D:\Dev
-          set CLANG_INSTALL_DIR=%INSTALL_BASE%\libclang
+      #     set INSTALL_BASE=D:\Dev
+      #     set CLANG_INSTALL_DIR=%INSTALL_BASE%\libclang
           
-          set _qt_src=qt-everywhere-src-%_qt_ver%
-          set QT_INSTALL_DIR=%INSTALL_BASE%\Qt\%_qt_ver%\qt
-          set _3rdparty=%INSTALL_BASE%\Qt\%_qt_ver%\3rdParty
+      #     set _qt_src=qt-everywhere-src-%_qt_ver%
+      #     set QT_INSTALL_DIR=%INSTALL_BASE%\Qt\%_qt_ver%\qt
+      #     set _3rdparty=%INSTALL_BASE%\Qt\%_qt_ver%\3rdParty
 
-          set _deps_=%CD%\deps
-          set MYSQL_DIR=%_deps_%\mysql
-          set VULKAN_DIR=%_deps_%\vulkanSDK
-          set OPENSSL_DIR=%_3rdparty%\openssl
-          set BUILD_DIR=D:\build
+      #     set _deps_=%CD%\deps
+      #     set MYSQL_DIR=%_deps_%\mysql
+      #     set VULKAN_DIR=%_deps_%\vulkanSDK
+      #     set OPENSSL_DIR=%_3rdparty%\openssl
+      #     set BUILD_DIR=D:\build
 
-          set PATH=%CD%\ninja;%CD%\MinGW\bin;%QT_INSTALL_DIR%\bin;%CLANG_INSTALL_DIR%\bin;%PATH%  
+      #     set PATH=%CD%\ninja;%CD%\MinGW\bin;%QT_INSTALL_DIR%\bin;%CLANG_INSTALL_DIR%\bin;%PATH%  
 
-          echo ---------------------------copy  openssl (2) dlls --------------------------------
-          copy %OPENSSL_DIR%\bin\libcrypto-3-x64.dll   %QT_INSTALL_DIR%\bin /y
-          copy %OPENSSL_DIR%\bin\libssl-3-x64.dll %QT_INSTALL_DIR%\bin /y
-          echo ---------------------------copy  libmariadb.dll --------------------------------
-          copy %MYSQL_DIR%\lib\libmariadb.dll %QT_INSTALL_DIR%\bin /y
-          echo ---------------------------copy  vulkan-1.dll --------------------------------
-          copy %VULKAN_DIR%\vulkan-1.dll %QT_INSTALL_DIR%\bin /y
+      #     echo ---------------------------copy  openssl (2) dlls --------------------------------
+      #     copy %OPENSSL_DIR%\bin\libcrypto-3-x64.dll   %QT_INSTALL_DIR%\bin /y
+      #     copy %OPENSSL_DIR%\bin\libssl-3-x64.dll %QT_INSTALL_DIR%\bin /y
+      #     echo ---------------------------copy  libmariadb.dll --------------------------------
+      #     copy %MYSQL_DIR%\lib\libmariadb.dll %QT_INSTALL_DIR%\bin /y
+      #     echo ---------------------------copy  vulkan-1.dll --------------------------------
+      #     copy %VULKAN_DIR%\vulkan-1.dll %QT_INSTALL_DIR%\bin /y
 
 
-          cmake --build %BUILD_DIR% --parallel --target qch_docs 
-          cmake --build %BUILD_DIR% --parallel --target install_qch_docs
-          echo ---------------------------build qtcharts plugins --------------------------------
-          cd %_qt_src%\qtcharts\plugins
-          mkdir build & cd build & qmake .. & make release & make install & cd .. & rd /q /s build
+      #     cmake --build %BUILD_DIR% --parallel --target qch_docs 
+      #     cmake --build %BUILD_DIR% --parallel --target install_qch_docs
+      #     echo ---------------------------build qtcharts plugins --------------------------------
+      #     cd %_qt_src%\qtcharts\plugins
+      #     mkdir build & cd build & qmake .. & make release & make install & cd .. & rd /q /s build
 
 
       - name: post process
@@ -269,9 +269,12 @@ jobs:
           set OPENSSL_DIR=%_3rdparty%\openssl
           set BUILD_DIR=D:\build          
 
-          python ./utils/qt6-build-post-process.py
+          # python ./utils/qt6-build-post-process.py
+          echo test_test > %QT_INSTALL_DIR%\..\test.txt
 
           7z a -t7z -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on %_qt_ver%-%mingw%.7z %QT_INSTALL_DIR%\..\
+
+          dir 
 
       - name: upload zipped qt files
         uses:  actions/upload-artifact@v4.4.3
