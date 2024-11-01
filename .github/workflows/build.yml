@@ -68,7 +68,10 @@ jobs:
           7z x libclang.7z -o%INSTALL_BASE%\
           7z x openssl.7z -o%_3rdparty%\
           7z x %_qt_src%.zip 
-  
+
+          echo ---------------------  fix openxr headers error --------------------------------
+          curl -l -oCMakeLists.txt https://code.qt.io/cgit/qt/qtquick3d.git/plain/src/3rdparty/openxr/CMakeLists.txt?id=2626397861af1b2b78485ce06ac33ed182174303
+          copy CMakeLists.txt %_qt_src%\qtquick3d\src\3rdparty\openxr\CMakeLists.txt /y
           dir 
 
       - name: toolsets Test 
