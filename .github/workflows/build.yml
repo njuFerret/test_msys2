@@ -70,9 +70,8 @@ jobs:
           7z x %_qt_src%.zip 
 
           echo ---------------------  fix openxr headers error --------------------------------
-          curl -l -oCMakeLists.txt https://code.qt.io/cgit/qt/qtquick3d.git/plain/src/3rdparty/openxr/CMakeLists.txt?id=2626397861af1b2b78485ce06ac33ed182174303
-          copy CMakeLists.txt %_qt_src%\qtquick3d\src\3rdparty\openxr\CMakeLists.txt /y
-          dir 
+          curl -l -o%_qt_src%/qtquick3d/src/3rdparty/openxr/CMakeLists.txt "https://code.qt.io/cgit/qt/qtquick3d.git/plain/src/3rdparty/openxr/CMakeLists.txt?id=3ab298ebc1d751cff7f941ccecdf7f0e140a5a99"
+          dir %_qt_src%\qtquick3d\src\3rdparty\openxr
 
       - name: toolsets Test 
         shell: cmd
@@ -195,6 +194,7 @@ jobs:
             -DQT_BUILD_TESTS_BY_DEFAULT:BOOL=OFF ^
             -DQT_BUILD_EXAMPLES_AS_EXTERNAL:BOOL=OFF ^
             -DQT_BUILD_EXAMPLES:BOOL=ON ^
+            -DQT_INSTALL_EXAMPLES_SOURCES:BOOL=ON ^
             -DFEATURE_qtwebengine_build:BOOL=OFF ^
             -DFEATURE_qtwebengine_core_build:BOOL=OFF ^
             -DFEATURE_qtwebengine_quick_build:BOOL=OFF ^
@@ -272,12 +272,12 @@ jobs:
           set OPENSSL_DIR=%_3rdparty%\openssl
           set BUILD_DIR=D:\build          
           echo ---------------------------post process --------------------------------
-          python ./utils/qt6-build-post-process.py %_qt_src% %QT_INSTALL_DIR%\..
+          @REM python ./utils/qt6-build-post-process.py %_qt_src% %QT_INSTALL_DIR%\..
           
-          # mkdir %QT_INSTALL_DIR%
-          # dir %INSTALL_BASE%
-          # echo test_test > %QT_INSTALL_DIR%\..\test.txt
-          # dir %QT_INSTALL_DIR%\..
+          @REM # mkdir %QT_INSTALL_DIR%
+          @REM # dir %INSTALL_BASE%
+          @REM # echo test_test > %QT_INSTALL_DIR%\..\test.txt
+          @REM # dir %QT_INSTALL_DIR%\..
           
           echo ---------------------------zipped qt %_qt_ver% --------------------------------
           7z a -t7z -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on %_qt_ver%_%mingw%.7z %INSTALL_BASE%\Qt\%_qt_ver%
