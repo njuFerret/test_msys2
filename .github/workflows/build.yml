@@ -212,7 +212,7 @@ jobs:
 
           copy %BUILD_DIR%\config.summary  %QT_INSTALL_DIR%\..
 
-      - name: Config Qt and build
+      - name: build qt docs
         shell: cmd
         run: |      
           set mingw=MinGW-x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1
@@ -243,7 +243,7 @@ jobs:
           echo ---------------------------copy  vulkan-1.dll --------------------------------
           copy %VULKAN_DIR%\vulkan-1.dll %QT_INSTALL_DIR%\bin /y
 
-          echo ---------------------------build & install docs --------------------------------
+          echo ---------------------------build and install docs --------------------------------
           cmake --build %BUILD_DIR% --parallel --target qch_docs 
           cmake --build %BUILD_DIR% --parallel --target install_qch_docs
           echo ---------------------------build qtcharts plugins --------------------------------
@@ -272,7 +272,7 @@ jobs:
           set OPENSSL_DIR=%_3rdparty%\openssl
           set BUILD_DIR=D:\build          
           echo ---------------------------post process --------------------------------
-          python ./utils/qt6-build-post-process.py
+          python ./utils/qt6-build-post-process.py %_qt_src% %QT_INSTALL_DIR%\..
           
           # mkdir %QT_INSTALL_DIR%
           # dir %INSTALL_BASE%
