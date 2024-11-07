@@ -56,7 +56,7 @@ jobs:
           echo ---------------------------download %_qt_src%.zip --------------------------------
           curl -L -o %_qt_src%.zip    https://download.qt.io/official_releases/qt/6.8/%_qt_ver%/single/%_qt_src%.zip
           echo ---------------------------download openssl --------------------------------
-          curl -L -o openssl.7z       https://github.com/njuFerret/actions/releases/download/build_20241029/openssl-%_openss_ver%_%mingw%.7z          
+          curl -L -o openssl.7z       https://github.com/njuFerret/actions/releases/download/build_20241102/openssl-%_openss_ver%_%mingw%.7z          
           # curl -L -o vulkanSDK.exe  https://sdk.lunarg.com/sdk/download/1.3.296.0/windows/VulkanSDK-1.3.296.0-Installer.exe
           # vulkanSDK -t %_deps_%/vulkanSDK --am --al -c in
           echo ---------------------------download mysql --------------------------------
