@@ -304,7 +304,7 @@ jobs:
             -DBUILD_PLUGIN_QNX:BOOL=OFF ^
             -DBUILD_PLUGIN_SUBVERSIOFF ^:BOOL=OFF ^
             -DBUILD_TESTS_BY_DEFAULT:BOOL=OFF ^
-            -S%_qt_creator_src% -Bbuild_qtcreator
+            -S%_qt_creator_src% -B./build_qtcreator
 
           dir 
           cmake --build build_qtcreator --parallel -j
