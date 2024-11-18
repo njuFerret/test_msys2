@@ -259,59 +259,6 @@ jobs:
           cd %_qt_src%\qtcharts\plugins
           mkdir build & cd build & qmake .. & make release & make install & cd .. & rd /q /s build
 
-      # - name: build qtcreator
-      #   shell: cmd
-      #   run: |     
-      #     set mingw=MinGW-x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1_fix2
-      #     set START=%CD%
-      #     set _qt_ver=6.8.0
-      #     set _qt_creator_ver=14.0.2
-
-      #     set INSTALL_BASE=D:\Dev
-      #     set QT_INSTALL_DIR=%INSTALL_BASE%\Qt\%_qt_ver%\qt
-      #     set _qt_src=qt-everywhere-src-%_qt_ver%
-      #     set _qt_creator_src=qt-creator-opensource-src-%_qt_creator_ver%          
-      #     set PATH=%CD%\ninja;%CD%\MinGW\bin;%QT_INSTALL_DIR%\bin;%CLANG_INSTALL_DIR%\bin;%PATH%  
-
-      #     set _deps_=%CD%\deps
-      #     # set MYSQL_DIR=%_deps_%\mysql
-      #     set VULKAN_DIR=%_deps_%\vulkanSDK
-      #     # set OPENSSL_DIR=%_3rdparty%\openssl
-      #     # set BUILD_DIR=D:\build          
-      #     echo ---------------------------build qt creater %_qt_creator_ver% --------------------------------
-      #     @REM python ./utils/qt6-build-post-process.py %_qt_src% %QT_INSTALL_DIR%\..
-          
-      #     @REM # mkdir %QT_INSTALL_DIR%
-      #     @REM # dir %INSTALL_BASE%
-      #     @REM # echo test_test > %QT_INSTALL_DIR%\..\test.txt
-      #     @REM # dir %QT_INSTALL_DIR%\..
-          
-      #     cmake -G Ninja -Wno-dev -DCMAKE_BUILD_TYPE=Release ^
-      #       -DCMAKE_INSTALL_PREFIX=%QT_INSTALL_DIR%/../qtcreator ^
-      #       -DVulkan_LIBRARY=%VULKAN_DIR%/Lib/vulkan-1.lib ^
-      #       -DVulkan_INCLUDE_DIR=%VULKAN_DIR%/Include ^
-      #       -DVulkan_GLSLANG_VALIDATOR_EXECUTABLE=%VULKAN_DIR%/bin/glslangValidator.exe ^
-      #       -DVulkan_GLSLC_EXECUTABLE=%VULKAN_DIR%/bin/glslc.exe ^
-      #       -DWITH_DOCS:BOOL=ON ^
-      #       -DBUILD_PLUGIN_ANDROID:BOOL=OFF ^
-      #       -DBUILD_PLUGIN_BAZAAR:BOOL=OFF ^
-      #       -DBUILD_PLUGIN_DOCKER:BOOL=OFF ^
-      #       -DBUILD_PLUGIN_HASKELL:BOOL=OFF ^
-      #       -DBUILD_PLUGIN_IOS:BOOL=OFF ^
-      #       -DBUILD_PLUGIN_MACROS:BOOL=OFF ^
-      #       -DBUILD_PLUGIN_MERCURIAL:BOOL=OFF ^
-      #       -DBUILD_PLUGIN_NIM:BOOL=OFF ^
-      #       -DBUILD_PLUGIN_QNX:BOOL=OFF ^
-      #       -DBUILD_PLUGIN_SUBVERSIOFF ^:BOOL=OFF ^
-      #       -DBUILD_TESTS_BY_DEFAULT:BOOL=OFF ^
-      #       -S%_qt_creator_src% -B./build_qtcreator
-
-      #     dir 
-      #     cmake --build build_qtcreator --parallel -j
-      #     cmake --build build_qtcreator --parallel --target install -j
-          
-
-
 
       - name: post process
         shell: cmd

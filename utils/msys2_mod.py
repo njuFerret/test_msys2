@@ -36,6 +36,8 @@ def modify_msys_cmd_file(msys_cmd_file=r'D:\a\_temp\setup-msys2\msys2.CMD'):
         print(f' >  {msys_cmd_file} not exists')
         return
 
+    print(f'*****************config msys2 with script: {msys_cmd_file}********************')
+
     # 修改配置文件，使MSYS2使用系统环境变量
     content = msys_cmd_file.open('r', encoding='utf-8').read().replace('minimal', "inherit").strip()
 
