@@ -140,7 +140,7 @@ jobs:
           echo -------------------- test end --------------------------
 
 
-      - name: Config & build & install Qt
+      - name: Config & build 
         shell: cmd
         run: |          
           set START=%CD%
@@ -159,7 +159,7 @@ jobs:
           @REM 第一次编译ft
           rd /q /s %BUILD_DIR% > NUL
           echo ---------------------------build freetype 1th --------------------------------
-          cmake -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX:PATH=%FT_PREFIX% -DFT_DISABLE_HARFBUZZ:BOOL=ON -S%PWD%/freetype -B%BUILD_DIR%
+          cmake -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX:PATH=%FT_PREFIX% -DFT_DISABLE_HARFBUZZ:BOOL=ON -S%START%/freetype -B%BUILD_DIR%
 
           :: 安装ft
           cmake --build %BUILD_DIR% --parallel
@@ -177,7 +177,7 @@ jobs:
               -DFREETYPE_INCLUDE_DIR_ft2build:PATH=%FT_PREFIX%/include/freetype2 ^
               -DFREETYPE_LIBRARY_RELEASE:FILEPATH=%FT_PREFIX%/lib/libfreetype.a ^
               -DCMAKE_CXX_FLAGS=" -static" ^
-              -S%PWD%/harfbuzz ^
+              -S%START%/harfbuzz ^
               -B%BUILD_DIR%
 
           :: 安装 hb
@@ -196,7 +196,7 @@ jobs:
               -DFT_DISABLE_HARFBUZZ:BOOL=OFF ^
               -DHarfBuzz_INCLUDE_DIR:PATH=%HB_PREFIX%/include/harfbuzz ^
               -DHarfBuzz_LIBRARY:FILEPATH=%HB_PREFIX%/lib/libharfbuzz.a ^
-              -S%PWD%/freetype ^
+              -S%START%/freetype ^
               -B%BUILD_DIR%
 
           :: 安装ft
@@ -218,13 +218,12 @@ jobs:
               -DFREETYPE_INCLUDE_DIR_ft2build:PATH=%FT_PREFIX%/include/freetype2 ^
               -DFREETYPE_LIBRARY_RELEASE:FILEPATH=%FT_PREFIX%/lib/libfreetype.a ^
               -DCMAKE_CXX_FLAGS=" -static" ^
-              -S%PWD%/harfbuzz ^
+              -S%START%/harfbuzz ^
               -B%BUILD_DIR%
 
           :: 安装 hb
           cmake --build %BUILD_DIR% --parallel
           cmake --build %BUILD_DIR% --parallel --target install
-
 
 
       - name: post process
