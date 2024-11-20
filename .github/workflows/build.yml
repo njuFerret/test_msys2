@@ -85,14 +85,14 @@ jobs:
         uses: actions/checkout@v4.2.2   
         with:
           repository: 'freetype/freetype'
-          ref: 'VER-${{ needs.versions_config.freetype-version-git }}'
+          ref: 'VER-${{ needs.versions_config.outputs.freetype-version-git }}'
           path: 'freetype'
 
       - name: check out harfbuzz
         uses: actions/checkout@v4.2.2   
         with:
           repository: 'harfbuzz/harfbuzz'
-          ref: '${{ needs.versions_config.harfbuzz-version }}'
+          ref: '${{ needs.versions_config.outputs.harfbuzz-version }}'
           path: 'harfbuzz'
 
 
@@ -155,7 +155,7 @@ jobs:
           set HB_PREFIX=%_3rdparty%\harfbuzz
           set BUILD_DIR=%START%\build
 
-
+          set PATH=%CD%\MinGW\bin;%PATH%
           @REM 第一次编译ft
           rd /q /s %BUILD_DIR% > NUL
           echo ---------------------------build freetype 1th --------------------------------
