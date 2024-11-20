@@ -159,9 +159,10 @@ jobs:
           @REM 第一次编译ft
           rd /q /s %BUILD_DIR% > NUL
           echo ---------------------------build freetype 1th --------------------------------
+          @REM 配置 ft (不带hb)
           cmake -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX:PATH=%FT_PREFIX% -DFT_DISABLE_HARFBUZZ:BOOL=ON -S%START%/freetype -B%BUILD_DIR%
 
-          :: 安装ft
+          :: 编译&安装ft
           cmake --build %BUILD_DIR% --parallel
           cmake --build %BUILD_DIR% --parallel --target install
 
@@ -169,7 +170,7 @@ jobs:
           rd /q /s %BUILD_DIR%
 
           echo ---------------------------build harfbuzz 1th --------------------------------
-          :: 编译 hb
+          :: 配置 hb
           cmake -GNinja -DCMAKE_BUILD_TYPE=Release ^
               -DCMAKE_INSTALL_PREFIX:PATH=%HB_PREFIX% ^
               -DHB_HAVE_FREETYPE:BOOL=ON ^
@@ -180,7 +181,7 @@ jobs:
               -S%START%/harfbuzz ^
               -B%BUILD_DIR%
 
-          :: 安装 hb
+          :: 编译&安装 hb
           cmake --build %BUILD_DIR% --parallel
           cmake --build %BUILD_DIR% --parallel --target install
 
@@ -190,7 +191,7 @@ jobs:
           :: 删除编译目录
           rd /q /s %BUILD_DIR%
           echo ---------------------------build freetype 2nd --------------------------------
-          :: 第二次编译 ft
+          :: 第二次配置 ft  (带hb)
           cmake -GNinja -DCMAKE_BUILD_TYPE=Release ^
               -DCMAKE_INSTALL_PREFIX:PATH=%FT_PREFIX% ^
               -DFT_DISABLE_HARFBUZZ:BOOL=OFF ^
@@ -199,7 +200,7 @@ jobs:
               -S%START%/freetype ^
               -B%BUILD_DIR%
 
-          :: 安装ft
+          :: 编译安装安装ft
           cmake --build %BUILD_DIR% --parallel
           cmake --build %BUILD_DIR% --parallel --target install
 
@@ -210,7 +211,7 @@ jobs:
           rd /q /s %BUILD_DIR%  > NUL
 
           echo ---------------------------build harfbuzz 2nd --------------------------------
-          :: 第二次编译 hb
+          :: 第二次配置 hb (带ft)
           cmake -GNinja -DCMAKE_BUILD_TYPE=Release ^
               -DCMAKE_INSTALL_PREFIX:PATH=%HB_PREFIX% ^
               -DHB_HAVE_FREETYPE:BOOL=ON ^
@@ -221,7 +222,7 @@ jobs:
               -S%START%/harfbuzz ^
               -B%BUILD_DIR%
 
-          :: 安装 hb
+          :: 编译&安装 hb 
           cmake --build %BUILD_DIR% --parallel
           cmake --build %BUILD_DIR% --parallel --target install
 
