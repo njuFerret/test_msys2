@@ -1,91 +1,129 @@
-name: Test build Qt
+name: Test build freetype & harfbuzz
 
 on:
   push:
     branches: [ "dev" ]
 
 jobs:
+  versions_config:
+    name: Config libraries 
+    runs-on: ubuntu-latest
+    outputs:      
+      mingw-version: ${{ steps.get-versions.outputs.mingw-version }}
+      mingw-link-prefix: ${{ steps.get-versions.outputs.mingw-link-prefix }}
+      install-prefix: ${{ steps.get-versions.outputs.install-prefix }}
+      qt-version: ${{ steps.get-versions.outputs.qt-version }}
+      freetype-version: ${{ steps.get-versions.outputs.freetype-version }}
+      harfbuzz-version: ${{ steps.get-versions.outputs.harfbuzz-version }}
+      freetype-version-git: ${{ steps.get-versions.outputs.freetype-version-git }}
+
+      # cmake-version: ${{ steps.get-versions.outputs.cmake-version }}
+      build-date: ${{ steps.date.outputs.build-date }}
+    steps:
+      - name: generate library version files
+        uses: actions/checkout@v4.2.2
+      - name: generate version files
+        run: |
+          python3 ./utils/libraries_version.py
+          ls -l versions
+          
+      - name: get versions
+        id: get-versions
+        run: |
+          echo "mingw-version=$(cat versions/mingw)" >> $GITHUB_OUTPUT
+          echo "mingw-link-prefix=$(cat versions/mingw_link_prefix)" >> $GITHUB_OUTPUT
+          echo "qt-version=$(cat versions/qt)" >> $GITHUB_OUTPUT
+          echo "install-prefix=$(cat versions/install_prefix)" >> $GITHUB_OUTPUT
+          echo "freetype-version=$(cat versions/freetype)" >> $GITHUB_OUTPUT
+          echo "harfbuzz-version=$(cat versions/harfbuzz)" >> $GITHUB_OUTPUT
+          echo "freetype-version-git=$(cat versions/freetype | sed 's|\.|-|g')" >> $GITHUB_OUTPUT
+          
+
+      - name: get build date      
+        id: date        
+        run: |  
+           echo "build-date=$(date +'%Y%m%d')" >> $GITHUB_OUTPUT
+
+  check-versions:
+    name: Check versions
+    runs-on: ubuntu-latest
+    needs: versions_config
+    steps:
+      - name: show library versions
+        run: |
+          echo "mingw-version=${{ needs.versions_config.outputs.mingw-version }}"
+          echo "mingw-link-prefix=${{ needs.versions_config.outputs.mingw-link-prefix }}"
+          echo "qt-version=${{ needs.versions_config.outputs.qt-version }}"
+          echo "install-prefix=${{ needs.versions_config.outputs.install-prefix }}"
+          echo "freetype-version=${{ needs.versions_config.outputs.freetype-version }}"
+          echo "harfbuzz-version=${{ needs.versions_config.outputs.harfbuzz-version }}"
+          echo "freetype-version-git=${{ needs.versions_config.outputs.freetype-version-git }}"
+
+
   build:
-    name: Test build Qt
+    name: build freetype & harfbuzz
+    needs:
+      - versions_config
+      - check-versions    
     runs-on: 
       - windows-2022
 
     steps:
-      # - name: check out openssl
-      #   uses: actions/checkout@v4
+      - name: Install ninja (windows)
+        run: choco install ninja
+
+      # - name: check out 
+      #   uses: actions/checkout@v4.2.2
       #   with:
-      #     repository: 'openssl/openssl'
-      #     ref: 'openssl-${{ inputs.openssl-version }}'
+      #     repository: 'njuFerret/DXSDK201006'
+      #     path: 'DXSDK201006'
+
       - name: check out 
-        uses: actions/checkout@v4        
+        uses: actions/checkout@v4.2.2      
+
+      - name: check out freetype
+        uses: actions/checkout@v4.2.2   
+        with:
+          repository: 'freetype/freetype'
+          ref: 'VER-${{ needs.versions_config.freetype-version-git }}'
+          path: 'freetype'
+
+      - name: check out harfbuzz
+        uses: actions/checkout@v4.2.2   
+        with:
+          repository: 'harfbuzz/harfbuzz'
+          ref: '${{ needs.versions_config.harfbuzz-version }}'
+          path: 'harfbuzz'
 
 
       - name: Config Enviroment
         shell: cmd
         run: |
-          set mingw=MinGW-x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1_fix2
           set START=%CD%
-          set _qt_ver=6.8.0
-          set _openss_ver=3.4.0
-          set _qt_creator_ver=14.0.2
-          set _llvm_ver=19.1.3
-          
-          set INSTALL_BASE=D:\Dev
-          set CLANG_INSTALL_DIR=%INSTALL_BASE%\libclang
-          
-          set _qt_src=qt-everywhere-src-%_qt_ver%
-          set QT_INSTALL_DIR=%INSTALL_BASE%\Qt\%_qt_ver%\qt
-          set _qt_creator_src=qt-creator-opensource-src-%_qt_creator_ver%
-          set _3rdparty=%INSTALL_BASE%\Qt\%_qt_ver%\3rdParty
-          set _build_src_dir=D:\qt
+          set mingw=${{ needs.versions_config.outputs.mingw-version }}
+          set _qt_ver=${{ needs.versions_config.outputs.qt-version }}
+          set INSTALL_BASE=${{ needs.versions_config.outputs.install-prefix }}
 
-          set _deps_=%CD%\deps
-          set MYSQL_DIR=%_deps_%\mysql
-          set VULKAN_DIR=%_deps_%\vulkanSDK
-          set OPENSSL_DIR=%_3rdparty%\openssl
-          set BUILD_DIR=D:\build
-          mkdir %_deps_%          
+          set QT_INSTALL_DIR=%INSTALL_BASE%\Qt\%_qt_ver%\qt
+          set _3rdparty=%INSTALL_BASE%\Qt\%_qt_ver%\3rdParty
+
           mkdir %_3rdparty%
 
           echo ---------------------------download mingw --------------------------------
-          curl -L -o %mingw%.7z       https://github.com/njuFerret/actions/releases/download/deps/%mingw%.7z          
-          echo ---------------------------download ninja --------------------------------
-          curl -L -o ninja-win.zip    https://github.com/ninja-build/ninja/releases/download/v1.12.1/ninja-win.zip
-          echo ---------------------------download libclang.7z --------------------------------
-          curl -L -o libclang.7z      https://github.com/njuFerret/actions/releases/download/build_20241102/libclang-%_llvm_ver%_%mingw%_static.7z
-          echo ---------------------------download %_qt_src%.zip --------------------------------
-          curl -L -o %_qt_src%.zip    https://download.qt.io/official_releases/qt/6.8/%_qt_ver%/single/%_qt_src%.zip
-          echo ---------------------------download openssl --------------------------------
-          curl -L -o openssl.7z       https://github.com/njuFerret/actions/releases/download/build_20241102/openssl-%_openss_ver%_%mingw%.7z          
-          # curl -L -o vulkanSDK.exe  https://sdk.lunarg.com/sdk/download/1.3.296.0/windows/VulkanSDK-1.3.296.0-Installer.exe
-          # vulkanSDK -t %_deps_%/vulkanSDK --am --al -c in
-          echo ---------------------------download mysql --------------------------------
-          curl -L -o mysql.7z         https://github.com/njuFerret/test_msys2/releases/download/deps/mysql.7z
-          echo ---------------------------download vulkanSDK --------------------------------
-          curl -L -o vulkanSDK.7z     https://github.com/njuFerret/test_msys2/releases/download/deps_vulkanSDK/vulkanSDK_1.3.296.0.7z
-          
-          curl -L -o %_qt_creator_src%.zip https://download.qt.io/official_releases/qtcreator/14.0/%_qt_creator_ver%/qt-creator-opensource-src-%_qt_creator_ver%.zip
-          7z x vulkanSDK.7z -o%_deps_%\
-          7z x mysql.7z -o%_deps_%\
+          curl -L -o %mingw%.7z       ${{ needs.versions_config.outputs.mingw-link-prefix }}/%mingw%.7z          
+
           7z x %mingw%.7z
-          7z x ninja-win.zip -oninja
-          7z x libclang.7z -o%INSTALL_BASE%\
-          7z x openssl.7z -o%_3rdparty%\
-          7z x %_qt_src%.zip
 
-          echo ---------------------  fix openxr headers error --------------------------------
-          curl -l -o%_qt_src%/qtquick3d/src/3rdparty/openxr/CMakeLists.txt "https://code.qt.io/cgit/qt/qtquick3d.git/plain/src/3rdparty/openxr/CMakeLists.txt?id=3ab298ebc1d751cff7f941ccecdf7f0e140a5a99"
-          dir %_qt_src%\qtquick3d\src\3rdparty\openxr
 
-          7z x %_qt_creator_src%.zip
 
       - name: toolsets Test 
         shell: cmd
         # system(windows-2022) has shipped with cmake/7zip
         run: |
-          set INSTALL_BASE=D:\Dev
-          set CLANG_INSTALL_DIR=%INSTALL_BASE%\libclang        
-          set PATH=%CD%\ninja;%CD%\MinGW\bin;%CLANG_INSTALL_DIR%\bin;%PATH%      
+          set INSTALL_BASE=${{ needs.versions_config.outputs.install-prefix }}
+
+          set PATH=%CD%\MinGW\bin;%PATH%
+
           echo -------------------- test cmake --------------------------
           cmake --version | findstr version
           echo -------------------- test ninja --------------------------
@@ -106,198 +144,123 @@ jobs:
       - name: Config & build & install Qt
         shell: cmd
         run: |          
-          set mingw=MinGW-x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1_fix2
           set START=%CD%
-          set _qt_ver=6.8.0
-          set _openss_ver=3.4.0
-          
-          set INSTALL_BASE=D:\Dev
-          set CLANG_INSTALL_DIR=%INSTALL_BASE%\libclang
-          
-          set _qt_src=qt-everywhere-src-%_qt_ver%          
+          set mingw=${{ needs.versions_config.outputs.mingw-version }}
+          set _qt_ver=${{ needs.versions_config.outputs.qt-version }}
+          set INSTALL_BASE=${{ needs.versions_config.outputs.install-prefix }}
+
           set QT_INSTALL_DIR=%INSTALL_BASE%\Qt\%_qt_ver%\qt
           set _3rdparty=%INSTALL_BASE%\Qt\%_qt_ver%\3rdParty
 
-          set _deps_=%CD%\deps
-          set MYSQL_DIR=%_deps_%\mysql
-          set VULKAN_DIR=%_deps_%\vulkanSDK
-          set OPENSSL_DIR=%_3rdparty%\openssl
-          set BUILD_DIR=D:\build
+          set FT_PREFIX=%_3rdparty%\freetype
+          set HB_PREFIX=%_3rdparty%\harfbuzz
+          set BUILD_DIR=%START%\build
 
-          set PATH=%CD%\ninja;%CD%\MinGW\bin;%CLANG_INSTALL_DIR%\bin;%PATH%
-                                 
-          echo ---------------------------Config Qt %_qt_ver%--------------------------------
-          cmake -GNinja -Wno-dev -Wno-deprecated-enum-float-conversion  -Wno-deprecated -Wno-comment -Wno-unknown-pragmas^
-            -DCMAKE_BUILD_TYPE=Release ^
-            -DFEATURE_optimize_full:BOOL=ON ^
-            -DFEATURE_optimize_size:BOOL=ON ^
-            -DCMAKE_INSTALL_PREFIX=%QT_INSTALL_DIR% ^
-            -DFEATURE_sql_mysql:BOOL=ON ^
-            -DFEATURE_sql_psql:BOOL=OFF ^
-            -DMySQL_INCLUDE_DIR=%MYSQL_DIR%/include ^
-            -DOPENSSL_ROOT_DIR=%OPENSSL_DIR% ^
-            -DOPENSSL_INCLUDE_DIR=%OPENSSL_DIR%/include ^
-            -DOPENSSL_SSL_LIBRARY=%OPENSSL_DIR%/lib64/libssl.a ^
-            -DOPENSSL_CRYPTO_LIBRARY=%OPENSSL_DIR%/lib64/libcrypto.a ^
-            -DFEATURE_opengl_desktop:BOOL=ON ^
-            -DFEATURE_opengl_dynamic:BOOL=ON ^
-            -DFEATURE_openssl:BOOL=ON ^
-            -DFEATURE_opensslv30:BOOL=ON ^
-            -DFEATURE_openssl_runtime:BOOL=ON ^
-            -DMySQL_LIBRARY=%MYSQL_DIR%/lib/libmariadb.a ^
-            -DFEATURE_qt3d_vulkan:BOOL=ON ^
-            -DFEATURE_vulkan:BOOL=ON ^
-            -DVulkan_LIBRARY=%VULKAN_DIR%/Lib/vulkan-1.a ^
-            -DVulkan_INCLUDE_DIR=%VULKAN_DIR%/Include ^
-            -DVulkan_GLSLANG_VALIDATOR_EXECUTABLE=%VULKAN_DIR%/bin/glslangValidator.exe ^
-            -DFEATURE_qt3d_rhi_renderer:BOOL=ON ^
-            -DVulkan_GLSLC_EXECUTABLE=%VULKAN_DIR%/bin/glslc.exe ^
-            -DFEATURE_vkb_lang_ar_AR:BOOL=OFF ^
-            -DFEATURE_vkb_lang_bg_BG:BOOL=OFF ^
-            -DFEATURE_vkb_lang_cs_CZ:BOOL=OFF ^
-            -DFEATURE_vkb_lang_da_DK:BOOL=OFF ^
-            -DFEATURE_vkb_lang_de_DE:BOOL=OFF ^
-            -DFEATURE_vkb_lang_el_GR:BOOL=OFF ^
-            -DFEATURE_vkb_lang_en_GB:BOOL=OFF ^
-            -DFEATURE_vkb_lang_es_ES:BOOL=OFF ^
-            -DFEATURE_vkb_lang_es_MX:BOOL=OFF ^
-            -DFEATURE_vkb_lang_et_EE:BOOL=OFF ^
-            -DFEATURE_vkb_lang_fa_FA:BOOL=OFF ^
-            -DFEATURE_vkb_lang_fi_FI:BOOL=OFF ^
-            -DFEATURE_vkb_lang_fr_CA:BOOL=OFF ^
-            -DFEATURE_vkb_lang_fr_FR:BOOL=OFF ^
-            -DFEATURE_vkb_lang_he_IL:BOOL=OFF ^
-            -DFEATURE_vkb_lang_hi_IN:BOOL=OFF ^
-            -DFEATURE_vkb_lang_hr_HR:BOOL=OFF ^
-            -DFEATURE_vkb_lang_hu_HU:BOOL=OFF ^
-            -DFEATURE_vkb_lang_id_ID:BOOL=OFF ^
-            -DFEATURE_vkb_lang_it_IT:BOOL=OFF ^
-            -DFEATURE_vkb_lang_ja_JP:BOOL=OFF ^
-            -DFEATURE_vkb_lang_ko_KR:BOOL=OFF ^
-            -DFEATURE_vkb_lang_ms_MY:BOOL=OFF ^
-            -DFEATURE_vkb_lang_nb_NO:BOOL=OFF ^
-            -DFEATURE_vkb_lang_nl_NL:BOOL=OFF ^
-            -DFEATURE_vkb_lang_pl_PL:BOOL=OFF ^
-            -DFEATURE_vkb_lang_pt_BR:BOOL=OFF ^
-            -DFEATURE_vkb_lang_pt_PT:BOOL=OFF ^
-            -DFEATURE_vkb_lang_ro_RO:BOOL=OFF ^
-            -DFEATURE_vkb_lang_ru_RU:BOOL=OFF ^
-            -DFEATURE_vkb_lang_sk_SK:BOOL=OFF ^
-            -DFEATURE_vkb_lang_sl_SI:BOOL=OFF ^
-            -DFEATURE_vkb_lang_sq_AL:BOOL=OFF ^
-            -DFEATURE_vkb_lang_sr_SP:BOOL=OFF ^
-            -DFEATURE_vkb_lang_sv_SE:BOOL=OFF ^
-            -DFEATURE_vkb_lang_th_TH:BOOL=OFF ^
-            -DFEATURE_vkb_lang_tr_TR:BOOL=OFF ^
-            -DFEATURE_vkb_lang_uk_UA:BOOL=OFF ^
-            -DFEATURE_vkb_lang_vi_VN:BOOL=OFF ^
-            -DFEATURE_vkb_lang_zh_TW:BOOL=OFF ^
-            -DFEATURE_zhuyin:BOOL=OFF ^
-            -DFEATURE_cangjie:BOOL=OFF ^
-            -DFEATURE_cxx20:BOOL=ON ^
-            -DFEATURE_cxx2a:BOOL=ON ^
-            -DBUILD_WITH_PCH:BOOL=ON ^
-            -DQT_BUILD_TESTS_BY_DEFAULT:BOOL=OFF ^
-            -DQT_BUILD_EXAMPLES_AS_EXTERNAL:BOOL=OFF ^
-            -DQT_BUILD_EXAMPLES:BOOL=ON ^
-            -DQT_INSTALL_EXAMPLES_SOURCES:BOOL=ON ^
-            -DFEATURE_qtwebengine_build:BOOL=OFF ^
-            -DFEATURE_qtwebengine_core_build:BOOL=OFF ^
-            -DFEATURE_qtwebengine_quick_build:BOOL=OFF ^
-            -DQT_FEATURE_qtpdf_build:BOOL=OFF ^
-            -DQT_FEATURE_qtpdf_quick_build:BOOL=OFF ^
-            -S%_qt_src% ^
-            -B%BUILD_DIR%
 
-          type %BUILD_DIR%\config.summary
+          @REM 第一次编译ft
+          rd /q /s %BUILD_DIR% > NUL
+          echo ---------------------------build freetype 1th --------------------------------
+          cmake -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX:PATH=%FT_PREFIX% -DFT_DISABLE_HARFBUZZ:BOOL=ON -S%PWD%/freetype -B%BUILD_DIR%
 
-          echo ---------------------------build Qt %_qt_ver% --------------------------------
-
+          :: 安装ft
           cmake --build %BUILD_DIR% --parallel
-          cmake --install %BUILD_DIR% 
+          cmake --build %BUILD_DIR% --parallel --target install
 
-          copy %BUILD_DIR%\config.summary  %QT_INSTALL_DIR%\..
+          :: 删除编译目录
+          rd /q /s %BUILD_DIR%
 
-      - name: build qt docs
-        shell: cmd
-        run: |      
-          set mingw=MinGW-x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1_fix2
-          set START=%CD%
-          set _qt_ver=6.8.0
-          set _openss_ver=3.4.0
-          
-          set INSTALL_BASE=D:\Dev
-          set CLANG_INSTALL_DIR=%INSTALL_BASE%\libclang
-          
-          set _qt_src=qt-everywhere-src-%_qt_ver%
-          set QT_INSTALL_DIR=%INSTALL_BASE%\Qt\%_qt_ver%\qt
-          set _3rdparty=%INSTALL_BASE%\Qt\%_qt_ver%\3rdParty
+          echo ---------------------------build harfbuzz 1th --------------------------------
+          :: 编译 hb
+          cmake -GNinja -DCMAKE_BUILD_TYPE=Release ^
+              -DCMAKE_INSTALL_PREFIX:PATH=%HB_PREFIX% ^
+              -DHB_HAVE_FREETYPE:BOOL=ON ^
+              -DFREETYPE_INCLUDE_DIR_freetype2:PATH=%FT_PREFIX%/include/freetype2 ^
+              -DFREETYPE_INCLUDE_DIR_ft2build:PATH=%FT_PREFIX%/include/freetype2 ^
+              -DFREETYPE_LIBRARY_RELEASE:FILEPATH=%FT_PREFIX%/lib/libfreetype.a ^
+              -DCMAKE_CXX_FLAGS=" -static" ^
+              -S%PWD%/harfbuzz ^
+              -B%BUILD_DIR%
 
-          set _deps_=%CD%\deps
-          set MYSQL_DIR=%_deps_%\mysql
-          set VULKAN_DIR=%_deps_%\vulkanSDK
-          set OPENSSL_DIR=%_3rdparty%\openssl
-          set BUILD_DIR=D:\build
+          :: 安装 hb
+          cmake --build %BUILD_DIR% --parallel
+          cmake --build %BUILD_DIR% --parallel --target install
 
-          set PATH=%CD%\ninja;%CD%\MinGW\bin;%QT_INSTALL_DIR%\bin;%CLANG_INSTALL_DIR%\bin;%PATH%  
+          :: 删除第一次ft安装文件
+          rd /q /s %FT_PREFIX% > NUL
 
-          echo %_qt_src%/qtquick3d/src/3rdparty/openxr/CMakeLists.txt
-          type %_qt_src%/qtquick3d/src/3rdparty/openxr/CMakeLists.txt
+          :: 删除编译目录
+          rd /q /s %BUILD_DIR%
+          echo ---------------------------build freetype 2nd --------------------------------
+          :: 第二次编译 ft
+          cmake -GNinja -DCMAKE_BUILD_TYPE=Release ^
+              -DCMAKE_INSTALL_PREFIX:PATH=%FT_PREFIX% ^
+              -DFT_DISABLE_HARFBUZZ:BOOL=OFF ^
+              -DHarfBuzz_INCLUDE_DIR:PATH=%HB_PREFIX%/include/harfbuzz ^
+              -DHarfBuzz_LIBRARY:FILEPATH=%HB_PREFIX%/lib/libharfbuzz.a ^
+              -S%PWD%/freetype ^
+              -B%BUILD_DIR%
 
-          echo ---------------------------copy  openssl (2) dlls --------------------------------
-          copy %OPENSSL_DIR%\bin\libcrypto-3-x64.dll   %QT_INSTALL_DIR%\bin /y
-          copy %OPENSSL_DIR%\bin\libssl-3-x64.dll %QT_INSTALL_DIR%\bin /y
-          echo ---------------------------copy  libmariadb.dll --------------------------------
-          copy %MYSQL_DIR%\lib\libmariadb.dll %QT_INSTALL_DIR%\bin /y
-          echo ---------------------------copy  vulkan-1.dll --------------------------------
-          copy %VULKAN_DIR%\vulkan-1.dll %QT_INSTALL_DIR%\bin /y
+          :: 安装ft
+          cmake --build %BUILD_DIR% --parallel
+          cmake --build %BUILD_DIR% --parallel --target install
 
-          echo ---------------------------build and install docs --------------------------------
-          cmake --build %BUILD_DIR% --parallel --target qch_docs 
-          cmake --build %BUILD_DIR% --parallel --target install_qch_docs
-          echo ---------------------------build qtcharts plugins --------------------------------
-          cd %_qt_src%\qtcharts\plugins
-          mkdir build & cd build & qmake .. & make release & make install & cd .. & rd /q /s build
+
+          :: 删除第一次hb安装文件
+          rd /q /s %HB_PREFIX% > NUL
+          :: 删除编译目录
+          rd /q /s %BUILD_DIR%  > NUL
+
+          echo ---------------------------build harfbuzz 2nd --------------------------------
+          :: 第二次编译 hb
+          cmake -GNinja -DCMAKE_BUILD_TYPE=Release ^
+              -DCMAKE_INSTALL_PREFIX:PATH=%HB_PREFIX% ^
+              -DHB_HAVE_FREETYPE:BOOL=ON ^
+              -DFREETYPE_INCLUDE_DIR_freetype2:PATH=%FT_PREFIX%/include/freetype2 ^
+              -DFREETYPE_INCLUDE_DIR_ft2build:PATH=%FT_PREFIX%/include/freetype2 ^
+              -DFREETYPE_LIBRARY_RELEASE:FILEPATH=%FT_PREFIX%/lib/libfreetype.a ^
+              -DCMAKE_CXX_FLAGS=" -static" ^
+              -S%PWD%/harfbuzz ^
+              -B%BUILD_DIR%
+
+          :: 安装 hb
+          cmake --build %BUILD_DIR% --parallel
+          cmake --build %BUILD_DIR% --parallel --target install
+
 
 
       - name: post process
         shell: cmd
         run: |     
-          set mingw=MinGW-x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1_fix2
           set START=%CD%
-          set _qt_ver=6.8.0
-          # set _openss_ver=3.4.0
+          set mingw=${{ needs.versions_config.outputs.mingw-version }}
+          set _qt_ver=${{ needs.versions_config.outputs.qt-version }}
+          set INSTALL_BASE=${{ needs.versions_config.outputs.install-prefix }}
 
-          set INSTALL_BASE=D:\Dev
-          # set CLANG_INSTALL_DIR=%INSTALL_BASE%\libclang
-          
-          # set _qt_src=qt-everywhere-src-%_qt_ver%
-          # set QT_INSTALL_DIR=%INSTALL_BASE%\Qt\%_qt_ver%\qt
-          # set _3rdparty=%INSTALL_BASE%\Qt\%_qt_ver%\3rdParty
+          set QT_INSTALL_DIR=%INSTALL_BASE%\Qt\%_qt_ver%\qt
+          set _3rdparty=%INSTALL_BASE%\Qt\%_qt_ver%\3rdParty
 
-          # set _deps_=%CD%\deps
-          # set MYSQL_DIR=%_deps_%\mysql
-          # set VULKAN_DIR=%_deps_%\vulkanSDK
-          # set OPENSSL_DIR=%_3rdparty%\openssl
-          # set BUILD_DIR=D:\build          
-          echo ---------------------------post process --------------------------------
-          @REM python ./utils/qt6-build-post-process.py %_qt_src% %QT_INSTALL_DIR%\..
-          
-          @REM # mkdir %QT_INSTALL_DIR%
-          @REM # dir %INSTALL_BASE%
-          @REM # echo test_test > %QT_INSTALL_DIR%\..\test.txt
-          @REM # dir %QT_INSTALL_DIR%\..
+          set FT_PREFIX=%_3rdparty%\freetype
+          set HB_PREFIX=%_3rdparty%\harfbuzz
+          set BUILD_DIR=%START%\build_freetype 
           
           echo ---------------------------zipped qt %_qt_ver% --------------------------------
-          7z a -t7z -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on %_qt_ver%_%mingw%.7z %INSTALL_BASE%\Qt\%_qt_ver%
+          7z a -t7z -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on freetype-${{ needs.versions_config.outputs.freetype-version }}_%mingw%.7z %FT_PREFIX%\freetype
+          7z a -t7z -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on harfbuzz-${{ needs.versions_config.outputs.harfbuzz-version }}_%mingw%.7z %HB_PREFIX%\harfbuzz
     
           dir 
 
-      - name: upload zipped qt files
+      - name: upload zipped files
         uses:  actions/upload-artifact@v4.4.3
         with:
-          name: 'ziped-qt'
-          path: ./6.8.0_MinGW-x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1_fix2.7z
+          name: 'ziped-freetype'
+          path: ./freetype-${{ needs.versions_config.outputs.freetype-version }}_%mingw%.7z
+
+      - name: upload zipped files
+        uses:  actions/upload-artifact@v4.4.3
+        with:
+          name: 'ziped-harfbuzz'
+          path: ./harfbuzz-${{ needs.versions_config.outputs.harfbuzz-version }}_%mingw%.7z
+
 
 
   release:
@@ -305,21 +268,31 @@ jobs:
       contents: write
   
     runs-on: ubuntu-latest
-    needs: [build]
+    needs: 
+      - build
+      - versions_config
 
     steps:
     - name: Download openssl
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v4.1.8
       with:          
-        name: 'ziped-qt'          
+        name: 'ziped-freetype'          
         # merge-multiple: true
         path: ./
 
-    - name: Unzip qt
+    steps:
+    - name: Download openssl
+      uses: actions/download-artifact@v4.1.8
+      with:          
+        name: 'ziped-harfbuzz'          
+        # merge-multiple: true
+        path: ./
+
+    - name: Unzip freetype
       shell: bash
       run: |
         ls -l   
-        7z x 6.8.0_MinGW-x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1_fix2.7z
+        7z x freetype-${{ needs.versions_config.outputs.freetype-version }}_%mingw%.7z
         ls -l
 
     - name: Upload to Release
@@ -327,5 +300,5 @@ jobs:
       uses: softprops/action-gh-release@v2
       with:
         files: "*.7z"
-        tag_name: qt-build
+        tag_name: ft-hb-mingw-build
            
