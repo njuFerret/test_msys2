@@ -272,15 +272,14 @@ jobs:
       - versions_config
 
     steps:
-    - name: Download openssl
+    - name: Download freetype
       uses: actions/download-artifact@v4.1.8
       with:          
         name: 'ziped-freetype'          
         # merge-multiple: true
         path: ./
 
-    steps:
-    - name: Download openssl
+    - name: Download harfbuzz
       uses: actions/download-artifact@v4.1.8
       with:          
         name: 'ziped-harfbuzz'          
