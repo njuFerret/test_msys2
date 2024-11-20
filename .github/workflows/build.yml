@@ -243,8 +243,8 @@ jobs:
           set BUILD_DIR=%START%\build_freetype 
           
           echo ---------------------------zipped qt %_qt_ver% --------------------------------
-          7z a -t7z -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on freetype-${{ needs.versions_config.outputs.freetype-version }}_%mingw%.7z %FT_PREFIX%\freetype
-          7z a -t7z -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on harfbuzz-${{ needs.versions_config.outputs.harfbuzz-version }}_%mingw%.7z %HB_PREFIX%\harfbuzz
+          7z a -t7z -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on freetype-${{ needs.versions_config.outputs.freetype-version }}_%mingw%.7z %FT_PREFIX%
+          7z a -t7z -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on harfbuzz-${{ needs.versions_config.outputs.harfbuzz-version }}_%mingw%.7z %HB_PREFIX%
     
           dir 
 
