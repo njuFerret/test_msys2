@@ -252,13 +252,13 @@ jobs:
         uses:  actions/upload-artifact@v4.4.3
         with:
           name: 'ziped-freetype'
-          path: ./freetype-${{ needs.versions_config.outputs.freetype-version }}_%mingw%.7z
+          path: ./freetype-${{ needs.versions_config.outputs.freetype-version }}_${{ needs.versions_config.outputs.mingw-version }}.7z
 
       - name: upload zipped files
         uses:  actions/upload-artifact@v4.4.3
         with:
           name: 'ziped-harfbuzz'
-          path: ./harfbuzz-${{ needs.versions_config.outputs.harfbuzz-version }}_%mingw%.7z
+          path: ./harfbuzz-${{ needs.versions_config.outputs.harfbuzz-version }}_${{ needs.versions_config.outputs.mingw-version }}.7z
 
 
 
