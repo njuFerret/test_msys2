@@ -118,7 +118,6 @@ jobs:
 
       - name: toolsets Test 
         shell: cmd
-        # system(windows-2022) has shipped with cmake/7zip
         run: |
           set INSTALL_BASE=${{ needs.versions_config.outputs.install-prefix }}
 
