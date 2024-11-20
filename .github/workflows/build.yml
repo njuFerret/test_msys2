@@ -290,7 +290,7 @@ jobs:
       shell: bash
       run: |
         ls -l   
-        7z x freetype-${{ needs.versions_config.outputs.freetype-version }}_%mingw%.7z
+        7z x freetype-${{ needs.versions_config.outputs.freetype-version }}_${{ needs.versions_config.outputs.mingw-version }}.7z
         ls -l
 
     - name: Upload to Release
